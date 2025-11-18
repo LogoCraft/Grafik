@@ -2,111 +2,106 @@
 <html lang="tr" id="html-tag">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GrafLife</title>
 
-  <!-- Tailwind (CDN) -->
+  <!-- Logo -->
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="GrafLife">
+
+  <!-- Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Chart.js (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-
-  <!-- Icon: Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <style>
-    /* Inter font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     .font-inter { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-
-    /* Chart.js container'ın responsively doğru çalışması için */
     #chart-area { position: relative; }
     #metric-chart { width: 100% !important; height: 100% !important; }
 
-    /* --- YENİ HAREKETLİ ARKA PLAN (DAHA IŞIKLI) --- */
+    /* --- Hareketli Arka Plan (HERKES İÇİN) --- */
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    
+    /* Gündüz Modu Arka Planı */
     body.animated-bg {
-      /* Krem ve Yeşil tonlarında yumuşak geçiş (Daha parlak beyazlarla) */
-      background: linear-gradient(-45deg, #FFFFFF, #F9FAFB, #D6EAD4, #C1E6DA);
+      background: linear-gradient(-45deg, #FFFFFF, #F0FDF4, #DCFCE7, #BBF7D0); /* Beyaz -> Açık Yeşil Tonları */
       background-size: 400% 400%;
-      animation: gradientBG 20s ease infinite;
+      animation: gradientBG 15s ease infinite;
     }
-    
-    /* --- YENİ: GECE MODU TEMEL STİLLERİ --- */
-    body.dark {
-      background-color: #1c1917; /* stone-900 */
-    }
-    body.animated-bg.dark {
-      /* Gece modu için hareketli arka plan */
-      background: linear-gradient(-45deg, #1f1d1b, #292524, #1a2e29, #1c3d1c);
+
+    /* Gece Modu Arka Planı */
+    body.dark.animated-bg {
+      background: linear-gradient(-45deg, #0c0a09, #1c1917, #064e3b, #14532d); /* Siyah -> Koyu Yeşil Tonları */
       background-size: 400% 400%;
-      animation: gradientBG 20s ease infinite;
+      animation: gradientBG 15s ease infinite;
     }
-    
+
+    /* --- YENİ: Yumuşak Geçiş Animasyonu --- */
+    .fade-in-up {
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .app-logo { height: 40px; width: auto; object-fit: contain; border-radius: 8px; }
   </style>
   
-  <!-- YENİ: Tailwind Renklerini Genişletme (DAHA IŞIKLI TEMA) -->
   <script>
     tailwind.config = {
-      darkMode: 'class', // YENİ: Gece modu için 'class' stratejisi
+      darkMode: 'class', 
       theme: {
         extend: {
           colors: {
-            'brand-cream': '#FFFFFF',        // Ana panel rengi (Eski: #FAF8F1)
-            'brand-cream-dark': '#F3F4F6', // Vurgu/Hover rengi (Eski: #EFEBE0)
-            'brand-green': '#059669',      // Ana yeşil (emerald-600)
-            'brand-green-dark': '#047857', // Koyu yeşil (emerald-700)
-            'brand-green-light': '#34D399',// Açık yeşil (emerald-400)
-            'brand-text': '#292524',      // Ana metin (stone-800)
-            'brand-text-secondary': '#57534E', // İkincil metin (stone-600)
+            'brand-cream': '#FFFFFF',        
+            'brand-cream-dark': '#F3F4F6', 
+            'brand-green': '#059669',      
+            'brand-green-dark': '#047857', 
+            'brand-green-light': '#34D399',
+            'brand-text': '#292524',      
+            'brand-text-secondary': '#57534E', 
           }
         }
       }
     }
   </script>
 </head>
-<!-- YENİ: Hareketli arka plan sınıfı (animated-bg) body'den kaldırıldı. JS ile eklenecek. -->
-<!-- YENİ: Tema yüklenirken geçişi yumuşatmak için transition eklendi -->
-<body class="font-inter bg-brand-cream dark:bg-stone-900 transition-colors duration-300" onload="lucide.createIcons()">
 
-<!-- App root -->
+<!-- Varsayılan olarak hareketli arka plan (animated-bg) sınıfı eklendi -->
+<body class="font-inter animated-bg transition-colors duration-500" onload="lucide.createIcons()">
+
 <div id="app-root"></div>
 
-<!-- Custom Modal Placeholder (TEMA UYGULANDI + GECE MODU) -->
-<div id="custom-modal-backdrop" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-    <!-- Modal içeriği artık mobil uyumlu (w-full max-w-lg) -->
-    <div id="custom-modal" class="bg-brand-cream dark:bg-stone-800 rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-100">
-        <h3 id="modal-title" class="text-2xl font-bold mb-4 text-brand-text dark:text-brand-cream">Başlık</h3>
-        <div id="modal-content" class="text-brand-text-secondary dark:text-stone-300 mb-6 break-words">İçerik</div>
+<!-- Genel Modal -->
+<div id="custom-modal-backdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 transition-opacity duration-300">
+    <div id="custom-modal" class="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-stone-700">
+        <h3 id="modal-title" class="text-2xl font-bold mb-4 text-brand-text dark:text-white"></h3>
+        <div id="modal-content" class="text-brand-text-secondary dark:text-stone-300 mb-6 break-words"></div>
         <div id="modal-actions" class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0">
-            <button id="modal-cancel-btn" class="px-5 py-2.5 bg-brand-cream-dark dark:bg-stone-700 text-brand-text dark:text-brand-cream font-medium rounded-lg hover:bg-gray-300/80 dark:hover:bg-stone-600 transition duration-150 w-full sm:w-auto">İptal</button>
-            <button id="modal-confirm-btn" class="px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 w-full sm:w-auto">Onayla</button>
+            <button id="modal-cancel-btn" class="px-5 py-2.5 bg-gray-200 dark:bg-stone-700 text-gray-800 dark:text-white font-medium rounded-lg hover:bg-gray-300 transition">İptal</button>
+            <button id="modal-confirm-btn" class="px-5 py-2.5 bg-brand-green text-white font-medium rounded-lg hover:bg-brand-green-dark transition shadow-lg shadow-green-500/30">Onayla</button>
         </div>
     </div>
 </div>
 
 <script>
-/*
-  ...
-  - YENİ: "Not Defteri" çoklu not, fotoğraf ve dosya desteği aldı.
-  - YENİ: "Müşteri Sipariş" paneli Elmas aboneler için eklendi.
-  - YENİ: Detaylı Kayıtlar için Günlük/Haftalık/Aylık filtreleme eklendi.
-  - YENİ: Site adı "GrafLife" oldu.
-  - YENİ: "Gelen DM" -> "Yazılan Mesaj"
-*/
-
-/* ---------- Constants ---------- */
+/* --- Sabitler --- */
 const CHART_OPTIONS_BASE = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
 const ADMIN_EMAIL = 'elaymemmedli27@gmail.com';
 const ADMIN_PASSWORD = 'Elsever1975';
 const BANNED_EMAIL_EXAMPLE = 'akanak@gmail.com'; 
-const FREE_TIER_LIMIT = 15; // Ücretsiz kullanıcıların max kayıt hakkı
+const FREE_TIER_LIMIT = 15; 
 
-/* ---------- I18N Dil Desteği ---------- */
+/* --- Dil Ayarları --- */
 let currentLang = localStorage.getItem('lang') || 'tr';
 document.getElementById('html-tag').lang = currentLang;
 
@@ -119,2204 +114,932 @@ const i18n = {
     "noAccount": "Hesabın yok mu?",
     "emailPlaceholder": "Email Adresiniz",
     "passwordPlaceholder": "Şifreniz",
-    "fakeMailWarningTitle": "🚨 SAHTE MAIL UYARISI 🚨",
-    "fakeMailWarningBody": "Geçersiz mailler (ör: ksjdjal@gmail.com) **Admin Tarafından Kalıcı Olarak Banlanacaktır**.",
-    "errorEmailPass": "Email ve şifre giriniz!",
-    "errorBanned": "Hesabınız geçersiz kullanım nedeniyle yasaklanmıştır. Email: {email}",
-    "errorBannedTitle": "Giriş Engellendi",
-    "errorWrongCreds": "Email veya şifre yanlış! Lütfen tekrar deneyin.",
-    "errorBannedMail": "Bu mail yasaklıdır ({email}). Lütfen başka bir mail adresi kullanın.",
-    "errorMailInUse": "Bu email zaten kayıtlı! Lütfen giriş yapın.",
-    "errorBannedRegister": "Hesabınız oluşturuldu ancak kısıtlı/sahte bir email adresi kullandığınız için otomatik olarak yasaklanmıştır. Email: {email}. Giriş yapmak için farklı bir hesap seçiniz.",
-    "errorBannedRegisterTitle": "Hesap Oluşturuldu ama Yasaklandı",
-    "successRegister": "Kayıt başarılı! Otomatik olarak giriş yapıldı.",
-    "accountSwitchTitle": "Hesap Ekle & Hızlı Geçiş",
-    "switchAccountLabel": "Kayıtlı Hesaplar Arasında Geçiş Yap (Güvenli):",
-    "bannedLabel": "(Yasaklı!)",
-    "createAccountLabel": "Yeni Hesap Oluştur:",
-    "newEmailPlaceholder": "Yeni Email Adresi",
-    "newPasswordPlaceholder": "Şifre Oluştur",
-    "registerAndSwitchButton": "Kayıt Ol ve Geçiş Yap",
-    "errorMailInUseSwitch": "Bu email zaten kayıtlı! Lütfen listeden seçin veya başka bir mail kullanın.",
-    "successRegisterSwitch": "Kayıt başarılı! Hesaba geçiş yapılıyor.",
-    "close": "Kapat",
+    "termsLabel": "Kullanım Şartlarını ve Kuralları kabul ediyorum.",
+    "termsError": "Giriş yapmak için kuralları kabul etmelisiniz.",
+    "rulesTitle": "Kurallar",
+    "rulesContent": "1. İzinsiz veri kopyalamak yasaktır.<br>2. Sistem güvenliğini tehdit etmek yasaktır.<br>3. Sahte bilgilerle işlem yapmak yasaktır.<br>4. Hesabınızın güvenliğinden siz sorumlusunuz.",
+    "fakeMailWarningTitle": "SAHTE MAIL UYARISI",
+    "fakeMailWarningBody": "Geçersiz mailler (ör: ksjdjal@gmail.com) yasaklanacaktır.",
     "dashboardTitle": "GrafLife",
-    "managementPanel": "Yönetim Paneli",
-    "upgradeSubscription": "Aboneliği Yükselt",
+    "dailyEntryTitle": "Veri Girişi",
+    "dmCountLabel": "DM Sayısı",
+    "adSpendLabel": "Reklam ($)",
+    "salesCountLabel": "Satış Adedi",
+    "revenueLabel": "Gelir ($)",
+    "saveMetricsButton": "Kaydet",
+    "orders": "Siparişler",
+    "notes": "Notlarım",
+    "managementPanel": "Yönetim",
+    "upgradeSubscription": "Abonelik",
+    "visualizationTitle": "Grafik",
+    "recordsTitle": "Kayıtlar",
+    "colTimestamp": "Tarih",
+    "colDM": "DM",
+    "colAdSpend": "Reklam",
+    "colSales": "Satış",
+    "colRevenue": "Gelir",
+    "colNetProfit": "Kâr",
+    "colActions": "İşlem",
+    "delete": "Sil",
+    "subModalTitle": "Abonelik Paketleri",
+    "subPrice1": "1 Aylık: ${price}",
+    "subPrice3": "3 Aylık: ${price}",
+    "subPrice12": "1 Yıllık: ${price}",
+    "subAdminEdit": "Fiyatları Düzenle (Admin)",
+    "notesTitle": "Not Defteri",
+    "addNote": "Yeni Not Ekle",
+    "noteTitlePh": "Başlık...",
+    "noteBodyPh": "İçerik...",
+    "noteFile": "Dosya/Fotoğraf Seç",
+    "noteDate": "Hatırlatıcı Tarihi",
+    "saveNote": "Notu Kaydet",
+    "ordersTitle": "Sipariş Takibi",
+    "orderName": "Müşteri Adı",
+    "orderReq": "İstek",
+    "orderAmt": "Tutar",
+    "orderNote": "Not",
+    "orderReason": "Sebep",
+    "orderDate": "Teslim Tarihi / Hatırlatıcı",
+    "saveOrder": "Sipariş Ekle",
+    "addToMetrics": "Metriklere Ekle",
+    "addToMetricsConfirm": "Bu siparişi (${amount}$) gelir olarak ana tabloya eklemek istiyor musunuz?",
+    "alertExpired": "Süresi Dolan Hatırlatıcılar Var!",
+    "alertExpiredBody": "Aşağıdaki kayıtların süresi doldu:",
+    "extendTime": "Süreyi Uzat",
+    "dismiss": "Tamam",
     "viewCredentials": "Hesap Bilgileri",
     "accountSwitch": "Hesap Ekle & Hızlı Geçiş",
-    "logout": "Tamamen Çıkış Yap",
+    "logout": "Çıkış Yap",
+    "language": "Dil",
+    "theme": "Tema",
     "accountInfoTitle": "Hesap Bilgileri",
-    "accountInfoBody": `<p class="break-words"><strong>Email:</strong> {email}</p><p><strong>Şifre:</strong> {password}</p><p class="mt-2"><strong>Abonelik:</strong> <span class="font-bold {subClass}">{subText}</span></p>`,
+    "accountInfoBody": "<p><strong>Email:</strong> {email}</p><p><strong>Şifre:</strong> {password}</p><p><strong>Abonelik:</strong> <span class='{subClass} font-bold'>{subText}</span></p>",
     "subFree": "Ücretsiz",
     "subDiamond": "Elmas",
-    "subAdmin": "Admin",
-    "dailyEntryTitle": "Günlük Grafik Girişi",
-    "dmCountLabel": "Yazılan Mesaj (Adet)", // GÜNCELLENDİ
-    "dmCountPlaceholder": "Örn: 45",
-    "adSpendLabel": "Reklam Harcaması (USD)",
-    "adSpendPlaceholder": "Örn: 50.75",
-    "salesCountLabel": "Satış Adedi (Adet)",
-    "salesCountPlaceholder": "Örn: 5",
-    "revenueLabel": "Elde Edilen Gelir (USD)",
-    "revenuePlaceholder": "Örn: 249.99 (Zarar için: -50)",
-    "saveMetricsButton": "Grafikleri Kaydet",
-    "visualizationTitle": "Toplam Grafik Görselleştirmesi (Net Kâr dahil)",
-    "noDataYet": "Henüz veri eklenmedi. Takibi başlatmak için yukarıdaki formu kullanın!",
-    "recordsTitle": "Detaylı Kayıtlar",
-    "filterDaily": "Günlük", // YENİ
-    "filterWeekly": "Haftalık", // YENİ
-    "filterMonthly": "Aylık", // YENİ
-    "colPeriod": "Periyot", // YENİ
-    "noRecordsFound": "Listelenecek kayıt bulunamadı.",
-    "colTimestamp": "Kayıt Zamanı",
-    "colDM": "Yazılan Mesaj", // GÜNCELLENDİ
-    "colAdSpend": "Reklam Harc. (USD)",
-    "colSales": "Satış Adedi",
-    "colRevenue": "Elde Edilen Gelir (USD)",
-    "colNetProfit": "NET KÂR (USD)",
-    "chartLabelDM": "Toplam Yazılan Mesaj", // GÜNCELLENDİ
-    "chartLabelAdSpend": "Toplam Reklam Harcaması (USD)",
-    "chartLabelSales": "Toplam Satış Adedi",
-    "chartLabelRevenue": "Toplam Gelir (USD)",
-    "chartLabelNetProfit": "Toplam Net Kâr (USD)",
-    "chartTooltipLabel": "Toplam Değer",
-    "errorMinOneMetric": "Lütfen en az bir metrik değeri girin.",
-    "errorNegativeMetrics": "Mesaj Sayısı ve Satış Adedi negatif olamaz.",
-    "errorFreeLimitTitle": "Ücretsiz Limit Aşıldı",
-    "errorFreeLimitBody": "Ücretsiz deneme limitinizi ({limit} kayıt) doldurdunuz. Daha fazla metrik eklemek ve sınırsız kayıt gibi özellikler için lütfen Elmas aboneliğe geçiş yapın.",
-    "subModalTitle": "Abonelik Planları",
-    "subModalBody": "Grafik takibinizi bir üst seviyeye taşıyın.",
-    "subFreeTitle": "Ücretsiz Plan",
-    "subFreePrice": "Her zaman ücretsiz",
-    "subFreeFeature1": "{limit} Kayıt Limiti",
-    "subFreeFeature2": "Temel Grafik Takibi",
-    "subFreeButton": "Mevcut Planınız",
-    "subProTitle": "Elmas Plan",
-    "subProPrice": "Ömür Boyu Tek Seferlik",
-    "subProFeature1": "Sınırsız Grafik Kaydı",
-    "subProFeature2": "Gelişmiş Not Alanı (Foto + Metin)",
-    "subProFeature3": "Müşteri Sipariş Takibi",
-    "subProButton": "Elmas Plana Geç",
-    "subProButtonWhatsApp": "WhatsApp ile Abone Ol",
-    "managementPanelTitleAdmin": "Admin Yönetim Paneli",
-    "managementPanelTitleDiamond": "Abonelik Yönetimi",
-    "backToDashboard": "Dashboard'a Dön",
-    "userManagementTitle": "Kullanıcı Yönetimi",
-    "colEmail": "Email",
-    "colStatus": "Durum",
-    "colSubscription": "Abonelik",
-    "colAdmin": "Yetki",
-    "colRegisterTime": "Kayıt Süresi",
-    "statusBanned": "Yasaklı",
-    "statusActive": "Aktif",
-    "subUser": "Kullanıcı",
-    "actionBan": "Yasakla",
-    "actionUnban": "Yasağı Kaldır",
-    "actionMakeDiamond": "Elmas Yap",
-    "actionRemoveDiamond": "Elmas'ı Al",
-    "actionMakeAdmin": "Admin Yap",
-    "actionRemoveAdmin": "Admin'i Al",
-    "banTitle": "Kullanıcı Yasaklama Onayı",
-    "banBody": "<strong>{email}</strong> kullanıcısını **kalıcı olarak** yasaklamak istediğinizden emin misiniz? Kullanıcının girişi engellenecektir.",
-    "unbanTitle": "Yasaklama Kaldırma Onayı",
-    "unbanBody": "<strong>{email}</strong> kullanıcısının yasağını **kalıcı olarak** kaldırmak istediğinizden emin misiniz?",
-    "makeDiamondTitle": "Abonelik Yükseltme Onayı",
-    "makeDiamondBody": "<strong>{email}</strong> kullanıcısını **Elmas** aboneliğe yükseltmek istediğinizden emin misiniz?",
-    "removeDiamondTitle": "Abonelik Düşürme Onayı",
-    "removeDiamondBody": "<strong>{email}</strong> kullanıcısının **Elmas** aboneliğini kaldırıp **Ücretsiz** plana düşürmek istediğinizden emin misiniz?",
-    "makeAdminTitle": "Admin Yetkisi Verme Onayı",
-    "makeAdminBody": "<strong>{email}</strong> kullanıcısına **Admin** yetkisi vermek istediğinizden emin misiniz? (Tüm yetkilere sahip olur!)",
-    "removeAdminTitle": "Admin Yetkisi Kaldırma Onayı",
-    "removeAdminBody": "<strong>{email}</strong> kullanıcısının **Admin** yetkisini kaldırmak istediğinizden emin misiniz?",
-    "language": "Dil",
-    "turkish": "Türkçe",
-    "english": "English",
-    "errorTitle": "Hata:",
-    "theme": "Tema",
-    "lightMode": "Gündüz Modu",
-    "darkMode": "Gece Modu",
-    "quickLogin": "Hızlı Giriş/Geçiş",
+    "noDataYet": "Henüz veri yok.",
+    "noRecordsFound": "Kayıt bulunamadı.",
+    "errorFreeLimitTitle": "Limit Doldu",
+    "errorFreeLimitBody": "Ücretsiz planda maksimum {limit} kayıt ekleyebilirsiniz. Lütfen abone olun.",
+    "switchAccountLabel": "Hızlı Geçiş Yapılacak Hesaplar:",
+    "deleteFromList": "Listeden Kaldır",
     "quickLoginDeleteTitle": "Hızlı Girişten Sil",
-    "quickLoginDeleteBody": "<strong>{email}</strong> hesabını hızlı giriş listesinden kaldırmak istediğinizden emin misiniz? (Hesabınız silinmez, sadece listeden kalkar.)",
-    "deleteFromList": "Listeden Sil",
-    "colActions": "İşlemler",
-    "delete": "Sil",
-    "deleteRecordTitle": "Kayıt Silme Onayı",
-    "deleteRecordBody": "Bu günlük metrik kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
-    "notes": "Notlarım",
-    "notesTitle": "Gelişmiş Not Defteri",
-    "notesSubtitle": "Fikirlerinizi, fotoğraflarınızı ve dosyalarınızı buraya ekleyin.",
-    "notesPlaceholderTitle": "Not Başlığı...",
-    "notesPlaceholderBody": "Notunuzu buraya yazın...",
-    "notesPhotoPlaceholder": "Fotoğrafınızı Buraya Yükleyin",
-    "notesFilesPlaceholder": "Dosyalarınızı Buraya Yükleyin",
-    "saveNote": "Notu Kaydet",
-    "noteSavedSuccess": "Not başarıyla kaydedildi!",
-    "notesListTitle": "Not Defterim", // YENİ
-    "notesListSubtitle": "Mevcut notlarınızı görüntüleyin veya yenisini ekleyin.", // YENİ
-    "addNewNote": "Yeni Not Ekle", // YENİ
-    "editNote": "Düzenle", // YENİ
-    "deleteNoteTitle": "Not Silme Onayı", // YENİ
-    "deleteNoteBody": "<strong>{title}</strong> başlıklı notu kalıcı olarak silmek istediğinizden emin misiniz?", // YENİ
-    "noNotesYet": "Henüz hiç not oluşturmadınız. Başlamak için 'Yeni Not Ekle' butonuna tıklayın.", // YENİ
-    "backToNotes": "Notlara Geri Dön", // YENİ
-    "choosePhoto": "Fotoğraf Seç", // YENİ
-    "chooseFiles": "Dosya Seç", // YENİ
-    "attachedFiles": "Ekli Dosyalar:", // YENİ
-    "customerLogTitle": "Yeni Müşteri Siparişi", // YENİ
-    "customerLogSubtitle": "Elmas özellik: Günlük müşteri siparişlerinizi girin.", // YENİ
-    "customerName": "Müşteri Adı", // YENİ
-    "customerRequest": "Ne İstedi?", // YENİ
-    "customerQuantity": "Kaç Adet?", // YENİ
-    "customerReason": "Neden İstiyor? (Opsiyonel)", // YENİ
-    "customerNote": "Müşteri Notu (Opsiyonel)", // YENİ
-    "saveOrder": "Siparişi Kaydet", // YENİ
-    "todaysOrders": "Bugünün Siparişleri", // YENİ
-    "orderSavedSuccess": "Sipariş başarıyla kaydedildi!", // YENİ
-    "colCustomerName": "Müşteri Adı", // YENİ
-    "colCustomerRequest": "İstek", // YENİ
-    "colCustomerQuantity": "Adet", // YENİ
-    "deleteOrderTitle": "Sipariş Silme Onayı", // YENİ
-    "deleteOrderBody": "Bu sipariş kaydını silmek istediğinizden emin misiniz?", // YENİ
+    "quickLoginDeleteBody": "Bu hesabı hızlı giriş listesinden kaldırmak istediğinize emin misiniz?",
+    "deleteRecordTitle": "Kaydı Sil",
+    "deleteRecordBody": "Bu metrik kaydını silmek istediğinize emin misiniz?",
+    "errorMinOneMetric": "En az bir değer girmelisiniz.",
+    "errorNegativeMetrics": "Değerler negatif olamaz.",
+    "adminPriceSettings": "Abonelik Fiyat Ayarları",
+    "adminPriceSave": "Fiyatları Kaydet",
+    "adminPriceSaved": "Fiyatlar başarıyla güncellendi!",
+    "userRoleAdmin": "Yönetici",
+    "userRoleUser": "Kullanıcı",
+    "actionMakeAdmin": "Yönetici Yap",
+    "actionRemoveAdmin": "Yöneticiliği Al",
+    "confirmMakeAdmin": "Bu kullanıcıya TAM YÖNETİCİ yetkisi vermek istediğinize emin misiniz?",
+    "confirmRemoveAdmin": "Bu kullanıcının yönetici yetkisini almak istediğinize emin misiniz?",
   },
   en: {
     "loginTitle": "Welcome to GrafLife",
     "loginButton": "Login",
-    "registerButton": "Register and Start",
+    "registerButton": "Register",
     "registerNow": "Register",
-    "noAccount": "Don't have an account?",
-    "emailPlaceholder": "Your Email Address",
-    "passwordPlaceholder": "Your Password",
-    "fakeMailWarningTitle": "🚨 FAKE MAIL WARNING 🚨",
-    "fakeMailWarningBody": "Invalid emails (e.g., ksjdjal@gmail.com) **Will Be Permanently Banned by Admin**.",
-    "errorEmailPass": "Please enter email and password!",
-    "errorBanned": "Your account has been banned due to invalid use. Email: {email}",
-    "errorBannedTitle": "Login Blocked",
-    "errorWrongCreds": "Wrong email or password! Please try again.",
-    "errorBannedMail": "This email is banned ({email}). Please use another email address.",
-    "errorMailInUse": "This email is already registered! Please log in.",
-    "errorBannedRegister": "Your account was created but has been automatically banned because you used a restricted/fake email address. Email: {email}. Please choose a different account to log in.",
-    "errorBannedRegisterTitle": "Account Created but Banned",
-    "successRegister": "Registration successful! Logged in automatically.",
-    "accountSwitchTitle": "Add Account & Quick Switch",
-    "switchAccountLabel": "Switch Between Registered Accounts (Secure):",
-    "bannedLabel": "(Banned!)",
-    "createAccountLabel": "Create New Account:",
-    "newEmailPlaceholder": "New Email Address",
-    "newPasswordPlaceholder": "Create Password",
-    "registerAndSwitchButton": "Register and Switch",
-    "errorMailInUseSwitch": "This email is already registered! Please select from the list or use another email.",
-    "successRegisterSwitch": "Registration successful! Switching to account.",
-    "close": "Close",
+    "noAccount": "No account?",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "termsLabel": "I accept Terms & Rules.",
+    "termsError": "You must accept rules.",
+    "rulesTitle": "Rules",
+    "rulesContent": "1. No copying.<br>2. No security threats.<br>3. No fake data.<br>4. Account security is yours.",
+    "fakeMailWarningTitle": "FAKE MAIL WARNING",
+    "fakeMailWarningBody": "Invalid emails will be banned.",
     "dashboardTitle": "GrafLife",
-    "managementPanel": "Management Panel",
-    "upgradeSubscription": "Upgrade Subscription",
+    "dailyEntryTitle": "Data Entry",
+    "dmCountLabel": "DM Count",
+    "adSpendLabel": "Ad Spend ($)",
+    "salesCountLabel": "Sales Count",
+    "revenueLabel": "Revenue ($)",
+    "saveMetricsButton": "Save",
+    "orders": "Orders",
+    "notes": "Notes",
+    "managementPanel": "Admin",
+    "upgradeSubscription": "Upgrade",
+    "visualizationTitle": "Chart",
+    "recordsTitle": "Records",
+    "colTimestamp": "Date",
+    "colDM": "DM",
+    "colAdSpend": "Ads",
+    "colSales": "Sales",
+    "colRevenue": "Rev",
+    "colNetProfit": "Profit",
+    "colActions": "Action",
+    "delete": "Del",
+    "subModalTitle": "Subscription Plans",
+    "subPrice1": "1 Month: ${price}",
+    "subPrice3": "3 Months: ${price}",
+    "subPrice12": "1 Year: ${price}",
+    "subAdminEdit": "Edit Prices (Admin)",
+    "notesTitle": "Notepad",
+    "addNote": "Add New Note",
+    "noteTitlePh": "Title...",
+    "noteBodyPh": "Content...",
+    "noteFile": "Select File",
+    "noteDate": "Reminder Date",
+    "saveNote": "Save Note",
+    "ordersTitle": "Order Tracking",
+    "orderName": "Customer Name",
+    "orderReq": "Request",
+    "orderAmt": "Amount",
+    "orderNote": "Note",
+    "orderReason": "Reason",
+    "orderDate": "Due Date / Reminder",
+    "saveOrder": "Add Order",
+    "addToMetrics": "Add to Metrics",
+    "addToMetricsConfirm": "Add order (${amount}$) to revenue?",
+    "alertExpired": "Expired Reminders!",
+    "alertExpiredBody": "Items due:",
+    "extendTime": "Extend",
+    "dismiss": "Dismiss",
     "viewCredentials": "Account Info",
-    "accountSwitch": "Add Account & Quick Switch",
-    "logout": "Log Out Completely",
-    "accountInfoTitle": "Account Information",
-    "accountInfoBody": `<p class="break-words"><strong>Email:</strong> {email}</p><p><strong>Password:</strong> {password}</p><p class="mt-2"><strong>Subscription:</strong> <span class="font-bold {subClass}">{subText}</span></p>`,
+    "accountSwitch": "Quick Switch",
+    "logout": "Logout",
+    "language": "Language",
+    "theme": "Theme",
+    "accountInfoTitle": "Account Info",
+    "accountInfoBody": "<p><strong>Email:</strong> {email}</p><p><strong>Pass:</strong> {password}</p><p><strong>Plan:</strong> <span class='{subClass} font-bold'>{subText}</span></p>",
     "subFree": "Free",
     "subDiamond": "Diamond",
-    "subAdmin": "Admin",
-    "dailyEntryTitle": "Daily Graph Entry",
-    "dmCountLabel": "Messages Sent (Count)", // UPDATED
-    "dmCountPlaceholder": "e.g: 45",
-    "adSpendLabel": "Ad Spend (USD)",
-    "adSpendPlaceholder": "e.g: 50.75",
-    "salesCountLabel": "Sales Count",
-    "salesCountPlaceholder": "e.g: 5",
-    "revenueLabel": "Revenue (USD)",
-    "revenuePlaceholder": "e.g: 249.99 (For loss: -50)",
-    "saveMetricsButton": "Save Graphs",
-    "visualizationTitle": "Total Graph Visualization (incl. Net Profit)",
-    "noDataYet": "No data added yet. Use the form above to start tracking!",
-    "recordsTitle": "Detailed Records",
-    "filterDaily": "Daily", // NEW
-    "filterWeekly": "Weekly", // NEW
-    "filterMonthly": "Monthly", // NEW
-    "colPeriod": "Period", // NEW
-    "noRecordsFound": "No records found to list.",
-    "colTimestamp": "Timestamp",
-    "colDM": "Messages Sent", // UPDATED
-    "colAdSpend": "Ad Spend (USD)",
-    "colSales": "Sales Count",
-    "colRevenue": "Revenue (USD)",
-    "colNetProfit": "NET PROFIT (USD)",
-    "chartLabelDM": "Total Messages Sent", // UPDATED
-    "chartLabelAdSpend": "Total Ad Spend (USD)",
-    "chartLabelSales": "Total Sales Count",
-    "chartLabelRevenue": "Total Revenue (USD)",
-    "chartLabelNetProfit": "Total Net Profit (USD)",
-    "chartTooltipLabel": "Total Value",
-    "errorMinOneMetric": "Please enter at least one metric value.",
-    "errorNegativeMetrics": "Message Count and Sales Count cannot be negative.",
-    "errorFreeLimitTitle": "Free Limit Exceeded",
-    "errorFreeLimitBody": "You have reached your free trial limit ({limit} records). To add more metrics and unlock features like unlimited records, please upgrade to the Diamond subscription.",
-    "subModalTitle": "Subscription Plans",
-    "subModalBody": "Take your graph tracking to the next level.",
-    "subFreeTitle": "Free Plan",
-    "subFreePrice": "Free forever",
-    "subFreeFeature1": "{limit} Record Limit",
-    "subFreeFeature2": "Basic Graph Tracking",
-    "subFreeButton": "Current Plan",
-    "subProTitle": "Diamond Plan",
-    "subProPrice": "Lifetime One-Time",
-    "subProFeature1": "Unlimited Graph Records",
-    "subProFeature2": "Advanced Note Editor (Photo + Text)",
-    "subProFeature3": "Customer Order Tracking",
-    "subProButton": "Upgrade to Diamond",
-    "subProButtonWhatsApp": "Subscribe via WhatsApp",
-    "managementPanelTitleAdmin": "Admin Management Panel",
-    "managementPanelTitleDiamond": "Subscription Management",
-    "backToDashboard": "Back to Dashboard",
-    "userManagementTitle": "User Management",
-    "colEmail": "Email",
-    "colStatus": "Status",
-    "colSubscription": "Subscription",
-    "colAdmin": "Role",
-    "colRegisterTime": "Register Time",
-    "statusBanned": "Banned",
-    "statusActive": "Active",
-    "subUser": "User",
-    "actionBan": "Ban",
-    "actionUnban": "Unban",
-    "actionMakeDiamond": "Make Diamond",
-    "actionRemoveDiamond": "Remove Diamond",
-    "actionMakeAdmin": "Make Admin",
-    "actionRemoveAdmin": "Remove Admin",
-    "banTitle": "Confirm User Ban",
-    "banBody": "Are you sure you want to **permanently** ban <strong>{email}</strong>? The user's login will be blocked.",
-    "unbanTitle": "Confirm Unban",
-    "unbanBody": "Are you sure you want to **permanantly** lift the ban for <strong>{email}</strong>?",
-    "makeDiamondTitle": "Confirm Subscription Upgrade",
-    "makeDiamondBody": "Are you sure you want to upgrade <strong>{email}</strong> to the **Diamond** subscription?",
-    "removeDiamondTitle": "Confirm Subscription Downgrade",
-    "removeDiamondBody": "Are you sure you want to remove the **Diamond** subscription for <strong>{email}</strong> and downgrade to **Free**?",
-    "makeAdminTitle": "Confirm Admin Promotion",
-    "makeAdminBody": "Are you sure you want to grant **Admin** privileges to <strong>{email}</strong>? (They will have all permissions!)",
-    "removeAdminTitle": "Confirm Admin Demotion",
-    "removeAdminBody": "Are you sure you want to remove **Admin** privileges from <strong>{email}</strong>?",
-    "language": "Language",
-    "turkish": "Türkçe",
-    "english": "English",
-    "errorTitle": "Error:",
-    "theme": "Theme",
-    "lightMode": "Light Mode",
-    "darkMode": "Dark Mode",
-    "quickLogin": "Quick Login/Switch",
+    "noDataYet": "No data yet.",
+    "noRecordsFound": "No records found.",
+    "errorFreeLimitTitle": "Limit Reached",
+    "errorFreeLimitBody": "Free limit ({limit}) reached. Please upgrade.",
+    "switchAccountLabel": "Quick Switch Accounts:",
+    "deleteFromList": "Remove",
     "quickLoginDeleteTitle": "Remove from Quick Login",
-    "quickLoginDeleteBody": "Are you sure you want to remove <strong>{email}</strong> from the quick login list? (Your account will not be deleted, only removed from this list.)",
-    "deleteFromList": "Remove from List",
-    "colActions": "Actions",
-    "delete": "Delete",
-    "deleteRecordTitle": "Confirm Record Deletion",
-    "deleteRecordBody": "Are you sure you want to delete this daily metric record? This action cannot be undone.",
-    "notes": "My Notes",
-    "notesTitle": "Advanced Notepad",
-    "notesSubtitle": "Add your ideas, photos, and files here.",
-    "notesPlaceholderTitle": "Note Title...",
-    "notesPlaceholderBody": "Write your note here...",
-    "notesPhotoPlaceholder": "Upload Your Photo Here",
-    "notesFilesPlaceholder": "Upload Your Files Here",
-    "saveNote": "Save Note",
-    "noteSavedSuccess": "Note saved successfully!",
-    "notesListTitle": "My Notepad", // NEW
-    "notesListSubtitle": "View your existing notes or add a new one.", // NEW
-    "addNewNote": "Add New Note", // NEW
-    "editNote": "Edit", // NEW
-    "deleteNoteTitle": "Confirm Note Deletion", // NEW
-    "deleteNoteBody": "Are you sure you want to permanently delete the note titled <strong>{title}</strong>?", // NEW
-    "noNotesYet": "You haven't created any notes yet. Click 'Add New Note' to start.", // NEW
-    "backToNotes": "Back to Notes", // NEW
-    "choosePhoto": "Choose Photo", // NEW
-    "chooseFiles": "Choose Files", // NEW
-    "attachedFiles": "Attached Files:", // NEW
-    "customerLogTitle": "New Customer Order", // NEW
-    "customerLogSubtitle": "Diamond feature: Log your daily customer orders.", // NEW
-    "customerName": "Customer Name", // NEW
-    "customerRequest": "What do they want?", // NEW
-    "customerQuantity": "How many?", // NEW
-    "customerReason": "Why? (Optional)", // NEW
-    "customerNote": "Note (Optional)", // NEW
-    "saveOrder": "Save Order", // NEW
-    "todaysOrders": "Today's Orders", // NEW
-    "orderSavedSuccess": "Order saved successfully!", // NEW
-    "colCustomerName": "Customer Name", // NEW
-    "colCustomerRequest": "Request", // NEW
-    "colCustomerQuantity": "Qty", // NEW
-    "deleteOrderTitle": "Confirm Order Deletion", // NEW
-    "deleteOrderBody": "Are you sure you want to delete this order record?", // NEW
+    "quickLoginDeleteBody": "Remove this account from quick login list?",
+    "deleteRecordTitle": "Delete Record",
+    "deleteRecordBody": "Delete this metric record?",
+    "errorMinOneMetric": "Enter at least one value.",
+    "errorNegativeMetrics": "No negative values.",
+    "adminPriceSettings": "Subscription Price Settings",
+    "adminPriceSave": "Save Prices",
+    "adminPriceSaved": "Prices updated successfully!",
+    "userRoleAdmin": "Admin",
+    "userRoleUser": "User",
+    "actionMakeAdmin": "Make Admin",
+    "actionRemoveAdmin": "Revoke Admin",
+    "confirmMakeAdmin": "Are you sure you want to grant FULL ADMIN rights to this user?",
+    "confirmRemoveAdmin": "Are you sure you want to revoke admin rights?",
   }
 };
 
-
-/**
- * Dil çeviri fonksiyonu (Translation function)
- */
 const translate = (key, vars = {}) => {
-  let translation = i18n[currentLang][key] || key;
-  for (const [varKey, varValue] of Object.entries(vars)) {
-    translation = translation.replace(`{${varKey}}`, varValue);
-  }
-  return translation;
+  let t = i18n[currentLang][key] || key;
+  for (const [k, v] of Object.entries(vars)) t = t.replace(`{${k}}`, v);
+  return t;
 };
 
-/**
- * Dili ayarlar ve uygulamayı yeniden render eder
- */
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
   document.getElementById('html-tag').lang = currentLang;
-  render(); // Dil değiştiğinde tüm arayüzü yeniden çiz
+  // Animasyonlu geçiş
+  document.body.style.opacity = '0';
+  setTimeout(() => { render(); document.body.style.opacity = '1'; }, 200);
 }
 
-/* ---------- YENİ: Gece/Gündüz Modu ---------- */
-let currentTheme = localStorage.getItem('theme_mode') || 'light';
-
-// YENİ: Değişken tanımlamaları buraya taşındı (HATA DÜZELTMESİ)
+/* --- Uygulama Değişkenleri --- */
 const root = document.getElementById('app-root');
 let currentUser = localStorage.getItem('current_user') || null;
-let currentView = 'dashboard'; // 'dashboard' | 'management' | 'modal' | 'notesList' | 'noteEditor' | 'customers'
+let currentView = 'dashboard'; 
+let currentTheme = localStorage.getItem('theme_mode') || 'light';
 
-/**
- * Temayı ayarlar (class ekler/çıkarır)
- * @param {string} mode - 'light' or 'dark'
- */
+/* --- Ayarlar ve Fiyatlandırma --- */
+const loadConfig = () => JSON.parse(localStorage.getItem('app_config') || '{"prices":{"p1":3,"p3":7,"p12":30}}');
+const saveConfig = (cfg) => localStorage.setItem('app_config', JSON.stringify(cfg));
+
+/* --- Tema Mantığı (Gece/Gündüz) --- */
 function setThemeMode(mode) {
     currentTheme = mode;
     localStorage.setItem('theme_mode', mode);
-    if (mode === 'dark') {
-        document.body.classList.add('dark');
+    if (mode === 'dark') document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
+    // İkonu güncelle
+    const btn = document.getElementById('theme-toggle-btn');
+    if(btn) updateThemeButton(btn);
+}
+
+function updateThemeButton(btn) {
+    if(currentTheme === 'light') {
+        btn.innerHTML = `<span class="flex items-center"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-500"></i> Gündüz</span>`;
     } else {
-        document.body.classList.remove('dark');
+        btn.innerHTML = `<span class="flex items-center"><i data-lucide="moon" class="w-4 h-4 mr-2 text-blue-500"></i> Gece</span>`;
     }
-    // Her tema değişiminde render'a gerek yok ama ikonları güncellemek için render'ı çağırabiliriz.
-    // Şimdilik sadece class'ı değiştirelim. Render fonksiyonu ikonları halledecek.
-    if (typeof render === 'function' && (currentUser !== null)) {
-         // Eğer kullanıcı giriş yapmışsa, profildeki ikonu güncellemek için render'ı tetikle
-         // render(); 
-         // NOT: Tam render pahalı olabilir, sadece ikonu güncelleyelim.
-         updateThemeToggleIcon();
-    }
+    lucide.createIcons();
 }
 
-/**
- * Tema değiştirme butonunun ikonunu ve metnini günceller
- */
-function updateThemeToggleIcon() {
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-    if (themeToggleBtn) {
-        const mode = localStorage.getItem('theme_mode') || 'light';
-        if (mode === 'dark') {
-            themeToggleBtn.innerHTML = `
-                <i data-lucide="sun" class="h-4 w-4 mr-2 text-yellow-500"></i>
-                ${translate('lightMode')}
-                <i data-lucide="check" class="h-4 w-4 ml-auto"></i>`;
-        } else {
-            themeToggleBtn.innerHTML = `
-                <i data-lucide="moon" class="h-4 w-4 mr-2 text-blue-500"></i>
-                ${translate('darkMode')}
-                <i data-lucide="check" class="h-4 w-4 ml-auto" style="display: none;"></i>`;
-        }
-        lucide.createIcons();
-    }
+function toggleTheme() {
+    setThemeMode(currentTheme === 'light' ? 'dark' : 'light');
 }
+setThemeMode(currentTheme); // Başlangıçta uygula
 
-/**
- * Temayı değiştirir (light <-> dark)
- */
-function toggleThemeMode() {
-    const newMode = (localStorage.getItem('theme_mode') || 'light') === 'light' ? 'dark' : 'light';
-    setThemeMode(newMode);
-}
-
-// Sayfa yüklenir yüklenmez temayı uygula
-setThemeMode(currentTheme);
-
-
-/* ---------- Helpers & Storage ---------- */
+/* --- Depolama ve Yardımcılar --- */
 const safeKeyFromEmail = (email) => 'dashboard_data_' + encodeURIComponent(email.toLowerCase());
-
-const formatCurrency = (amount) => {
-  const isNegative = amount < 0;
-  const absAmount = Math.abs(amount || 0);
-  // Dil desteği eklendi (tr-TR veya en-US)
-  const formatted = absAmount.toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return (isNegative ? '(-' : '') + '$' + formatted + (isNegative ? ')' : '');
-};
-
-const formatCount = (count) => (count || 0).toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US');
-const generateId = () => Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,9);
-
-/**
- * Hesapların ne kadar süredir kayıtlı olduğunu gösteren yardımcı fonksiyon.
- * (Dil desteği eklendi)
- */
-const timeAgo = (timestamp) => {
-    if (!timestamp) return 'Bilinmiyor';
-    const now = Date.now();
-    const diff = now - timestamp;
-    
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const months = Math.floor(days / 30.44); // Average days in a month
-    const years = Math.floor(days / 365.25);
-    
-    // Basit i18n
-    if (currentLang === 'en') {
-        if (years > 0) return `${years} year${years > 1 ? 's' : ''} ago`;
-        if (months > 0) return `${months} month${months > 1 ? 's' : ''} ago`;
-        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-        return 'Just now';
-    }
-
-    // TR (Default)
-    if (years > 0) return `${years} yıl önce`;
-    if (months > 0) return `${months} ay önce`;
-    if (days > 0) return `${days} gün önce`;
-    if (hours > 0) return `${hours} saat önce`;
-    if (minutes > 0) return `${minutes} dakika önce`;
-    
-    return 'Az önce';
-};
-
-/* --- YENİ: Tarih Gruplama Yardımcıları --- */
-// ISO Hafta numarasını almak için
-function getWeekNumber(d) {
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-    return weekNo;
-}
-// Haftalık grup anahtarı (örn: "2025-W47")
-const getWeekKey = (ts) => {
-    const d = new Date(ts);
-    return `${d.getFullYear()}-W${getWeekNumber(d)}`;
-};
-// Aylık grup anahtarı (örn: "2025-11")
-const getMonthKey = (ts) => {
-    const d = new Date(ts);
-    return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-};
-// Bugünün tarih anahtarı (örn: "2025-11-17")
-const getTodayKey = (ts) => {
-    return new Date(ts).toISOString().split('T')[0];
-}
-
-
-// User storage
+const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 const loadAllUsers = () => JSON.parse(localStorage.getItem('users_extended') || '{}');
 const saveAllUsers = (users) => localStorage.setItem('users_extended', JSON.stringify(users));
 
-// Hızlı Giriş Storage
+// Hızlı Giriş Depolama
 const loadQuickLoginAccounts = () => JSON.parse(localStorage.getItem('quick_login_accounts') || '[]');
-const saveQuickLoginAccounts = (accounts) => {
-    const uniqueAccounts = [...new Set(accounts)];
-    localStorage.setItem('quick_login_accounts', JSON.stringify(uniqueAccounts));
-};
+const saveQuickLoginAccounts = (arr) => localStorage.setItem('quick_login_accounts', JSON.stringify([...new Set(arr)]));
 
 function addToQuickLogin(email) {
-    let accounts = loadQuickLoginAccounts();
-    if (!accounts.includes(email)) {
-        accounts.push(email);
-        saveQuickLoginAccounts(accounts);
-    }
+    let accs = loadQuickLoginAccounts();
+    if(!accs.includes(email)) { accs.push(email); saveQuickLoginAccounts(accs); }
 }
-
 function removeFromQuickLogin(email) {
-    let accounts = loadQuickLoginAccounts();
-    const filteredAccounts = accounts.filter(acc => acc !== email);
-    saveQuickLoginAccounts(filteredAccounts);
+    let accs = loadQuickLoginAccounts();
+    saveQuickLoginAccounts(accs.filter(a => a !== email));
 }
 
-/**
- * Initializes the user database.
- */
+/* --- Kullanıcı Başlatma --- */
 function initializeUsers() {
     let users = loadAllUsers();
     let updated = false;
     const now = Date.now();
 
-    // 1. Admin (Elmas üye olarak ayarlandı)
     const adminUser = users[ADMIN_EMAIL];
-    if (!adminUser || adminUser.password !== ADMIN_PASSWORD || !adminUser.isAdmin || adminUser.subscription !== 'diamond' || !adminUser.createdAt_ms) {
-        users[ADMIN_EMAIL] = { 
-            password: ADMIN_PASSWORD, 
-            isAdmin: true, 
-            isBanned: false, 
-            createdAt_ms: adminUser?.createdAt_ms || now,
-            subscription: 'diamond' // Admin her zaman elmas
-        };
+    if (!adminUser || adminUser.password !== ADMIN_PASSWORD || !adminUser.isAdmin || adminUser.subscription !== 'diamond') {
+        users[ADMIN_EMAIL] = { password: ADMIN_PASSWORD, isAdmin: true, isBanned: false, createdAt_ms: now, subscription: 'diamond' };
         updated = true;
     }
-    
-    // 2. Banlı örnek kullanıcı
-    const bannedUser = users[BANNED_EMAIL_EXAMPLE];
-    if (!bannedUser || !bannedUser.isBanned || !bannedUser.createdAt_ms) {
-        users[BANNED_EMAIL_EXAMPLE] = { 
-            password: bannedUser?.password || 'bannedpass123', 
-            isAdmin: false, 
-            isBanned: true,
-            createdAt_ms: bannedUser?.createdAt_ms || now,
-            subscription: 'none'
-        };
-        updated = true;
-    }
-    
-    // 3. Tüm kullanıcıların 'createdAt_ms' ve 'subscription' alanı olduğundan emin ol
-    Object.keys(users).forEach(email => {
-        let userModified = false;
-        if (!users[email].createdAt_ms) {
-            users[email].createdAt_ms = now - (Math.floor(Math.random() * 86400000 * 30)); // Rastgele bir ay öncesi
-            userModified = true;
-        }
-        if (typeof users[email].subscription === 'undefined') {
-            // Admin olmayanlara 'none' ata
-            users[email].subscription = (email === ADMIN_EMAIL) ? 'diamond' : 'none';
-            userModified = true;
-        }
-        if (userModified) updated = true;
-    });
-
-    if (updated) {
-        saveAllUsers(users);
-    }
+    if (updated) saveAllUsers(users);
     return users;
 }
 
-/* ---------- App State / Render ---------- */
-let currentNoteIdToEdit = null; // YENİ: Not düzenleme için
-
+/* --- Render Mantığı --- */
 function showCustomModal(title, content, isConfirm = false, onConfirm, onCancel, options = {}) {
     const backdrop = document.getElementById('custom-modal-backdrop');
-    document.getElementById('modal-title').textContent = title;
+    const modal = document.getElementById('custom-modal');
     
+    document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-content').innerHTML = content;
     
     const confirmBtn = document.getElementById('modal-confirm-btn');
     const cancelBtn = document.getElementById('modal-cancel-btn');
     const modalActions = document.getElementById('modal-actions');
     
-    confirmBtn.onclick = null;
-    cancelBtn.onclick = null;
+    confirmBtn.onclick = null; cancelBtn.onclick = null;
     
-    const hideModal = () => { 
-        backdrop.classList.add('hidden'); 
-        modalActions.classList.remove('justify-start');
-        confirmBtn.classList.remove('hidden');
-        document.getElementById('custom-modal').classList.remove('max-w-md', 'max-w-lg', 'max-w-2xl');
+    const hide = () => {
+        modal.classList.remove('scale-100', 'opacity-100');
+        modal.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
     };
-
-    if (options.hideActions) {
-         modalActions.classList.add('hidden');
-    } else {
-         modalActions.classList.remove('hidden');
-    }
-
+    
+    if (options.hideActions) modalActions.classList.add('hidden'); else modalActions.classList.remove('hidden');
     if (isConfirm) {
         confirmBtn.classList.remove('hidden');
-        cancelBtn.textContent = options.cancelText || translate('close');
         confirmBtn.textContent = options.confirmText || 'Onayla';
-        confirmBtn.className = options.confirmClass || 'px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 w-full sm:w-auto';
-        
-        confirmBtn.onclick = () => { hideModal(); if (onConfirm) onConfirm(); };
-        cancelBtn.onclick = () => { hideModal(); if (onCancel) onCancel(); };
+        cancelBtn.textContent = options.cancelText || 'İptal';
+        confirmBtn.onclick = () => { hide(); if (onConfirm) onConfirm(); };
+        cancelBtn.onclick = () => { hide(); if (onCancel) onCancel(); };
     } else {
         confirmBtn.classList.add('hidden');
-        cancelBtn.textContent = options.cancelText || 'Tamam';
-        modalActions.classList.remove('justify-end');
-        modalActions.classList.add('justify-start');
-        cancelBtn.onclick = hideModal;
+        cancelBtn.textContent = 'Tamam';
+        cancelBtn.onclick = hide;
     }
-
-    if (!options.confirmText) {
-        if (title === translate('deleteRecordTitle')) confirmBtn.textContent = translate('delete');
-        else if (title === translate('deleteNoteTitle')) confirmBtn.textContent = translate('delete');
-        else if (title === translate('deleteOrderTitle')) confirmBtn.textContent = translate('delete');
-        else if (title === translate('banTitle')) confirmBtn.textContent = translate('actionBan');
-        else if (title === translate('makeDiamondTitle')) confirmBtn.textContent = translate('actionMakeDiamond');
-        else if (title === translate('makeAdminTitle')) confirmBtn.textContent = translate('actionMakeAdmin');
-        else if (title === translate('quickLoginDeleteTitle')) confirmBtn.textContent = translate('deleteFromList');
-    }
-
-    document.getElementById('custom-modal').classList.add(options.maxWidth || 'max-w-lg');
     
     backdrop.classList.remove('hidden');
+    // Animasyon
+    requestAnimationFrame(() => {
+        modal.classList.remove('scale-95', 'opacity-0');
+        modal.classList.add('scale-100', 'opacity-100');
+    });
 }
-
-/**
- * YENİ: Hata mesajı (Global Kapsama Taşındı)
- */
-const showError = (msg, title) => {
-    const ec = document.getElementById('error-container');
-    if (!ec) return; // Panel yoksa gösterme
-    if (!msg) { ec.innerHTML = ''; return; }
-    ec.innerHTML = `<div class="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-4" role="alert"><p class="font-bold">${title || translate('errorTitle')}</p><p class="text-sm">${msg}</p></div>`;
-};
-  
-/**
- * YENİ: Başarı Mesajı (Global Kapsama Taşındı)
- */
-const showSuccess = (msg) => {
-    const sc = document.getElementById('success-container');
-    if (!sc) return; // Panel yoksa gösterme
-    if (!msg) { sc.innerHTML = ''; return; }
-    sc.innerHTML = `<div class="bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-4" role="alert"><p class="font-bold">${msg}</p></div>`;
-    setTimeout(() => { sc.innerHTML = ''; }, 3000);
-};
-
 
 function render() {
-  initializeUsers();
-  
-  document.body.classList.remove('animated-bg');
-  setThemeMode(localStorage.getItem('theme_mode') || 'light');
-  
-  if (!currentUser) {
-    renderLogin();
-  } else if (currentView === 'management') {
-    renderManagementPanel();
-  } else if (currentView === 'notesList') { // YENİ: Not Listesi
-    renderNotesList();
-  } else if (currentView === 'noteEditor') { // YENİ: Not Düzenleyici
-    renderNoteEditor(currentNoteIdToEdit);
-  } else {
-    renderDashboard();
-  }
-  lucide.createIcons();
+    initializeUsers(); 
+    setThemeMode(localStorage.getItem('theme_mode') || 'light');
+    
+    // İçerik konteynerini sıfırla ve animasyon ekle
+    root.innerHTML = ''; 
+    const container = document.createElement('div');
+    container.className = 'fade-in-up w-full';
+    root.appendChild(container);
+    
+    const renderTarget = container; // Render fonksiyonları buraya yazacak
+
+    if (!currentUser) renderLogin(renderTarget);
+    else if (currentView === 'management') renderManagementPanel(renderTarget);
+    else if (currentView === 'notes') renderNotesPanel(renderTarget);
+    else if (currentView === 'orders') renderOrdersPanel(renderTarget);
+    else renderDashboard(renderTarget);
+    
+    lucide.createIcons();
 }
 
-/**
- * Kullanıcı değiştir ve yeniden render et
- */
-function switchUser(email) {
-    localStorage.setItem('current_user', email);
-    currentUser = email;
-    addToQuickLogin(email);
-    render();
-}
+/* --- Hatırlatıcı Kontrolü --- */
+function checkReminders() {
+    if (!currentUser) return;
+    const notesKey = 'notes_list_' + encodeURIComponent(currentUser);
+    const ordersKey = 'orders_data_' + encodeURIComponent(currentUser);
+    const notes = JSON.parse(localStorage.getItem(notesKey) || '[]');
+    const orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+    const now = Date.now();
+    let expiredItems = [];
 
-/* ---------- Login Component ---------- */
-function renderLogin() {
-  root.innerHTML = `
-    <div class="flex items-center justify-center min-h-screen p-4">
-      <div class="w-full max-w-md bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg rounded-3xl p-6 md:p-8 shadow-2xl border border-brand-cream-dark/50 dark:border-stone-700/50">
-        
-        <h2 id="login-title" class="text-3xl font-bold text-center text-brand-green-dark dark:text-brand-green-light mb-6">${translate('loginTitle')}</h2>
-        
-        <div class="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700/50 p-3 rounded-xl mb-6 text-center">
-            <p class="text-sm font-bold text-red-700 dark:text-red-300">${translate('fakeMailWarningTitle')}</p>
-            <p class="text-sm text-red-600 dark:text-red-300/80 mt-1">${translate('fakeMailWarningBody')}</p>
-        </div>
-        
-        <p id="login-error" class="hidden p-3 rounded-lg text-sm mb-4 text-center"></p>
-        
-        <form id="login-form" class="space-y-5">
-          <input id="login-email" type="email" placeholder="${translate('emailPlaceholder')}" class="w-full px-5 py-3 bg-brand-cream-dark/50 dark:bg-stone-700/50 text-brand-text dark:text-brand-cream rounded-xl placeholder-brand-text-secondary dark:placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-brand-green/50 focus:border-brand-green transition duration-150" required />
-          <input id="login-password" type="password" placeholder="${translate('passwordPlaceholder')}" class="w-full px-5 py-3 bg-brand-cream-dark/50 dark:bg-stone-700/50 text-brand-text dark:text-brand-cream rounded-xl placeholder-brand-text-secondary dark:placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-brand-green/50 focus:border-brand-green transition duration-150" required />
-          <button type="submit" class="w-full py-3.5 mt-4 bg-brand-green hover:bg-brand-green-dark text-white font-extrabold text-lg rounded-xl shadow-lg shadow-brand-green/30 transition duration-200 transform hover:scale-[1.01]">${translate('loginButton')}</button>
-        </form>
-        
-        <p class="text-sm text-brand-text-secondary dark:text-stone-400 mt-6 text-center">
-          ${translate('noAccount')} <button id="toggle-register" class="text-brand-green dark:text-brand-green-light font-bold hover:text-brand-green-dark dark:hover:text-brand-green transition duration-150 underline">${translate('registerNow')}</button>
-          <span class="mx-2 dark:text-stone-500">|</span> 
-          <button id="quick-switch-login" class="text-blue-500 font-bold hover:text-blue-400 transition duration-150 underline">${translate('quickLogin')}</button>
-        </p>
-        
-        <div class="text-center mt-6 pt-4 border-t border-brand-cream-dark dark:border-stone-700">
-            <button id="lang-tr" class="px-3 py-1 text-sm rounded-md ${currentLang === 'tr' ? 'bg-brand-green text-white font-bold' : 'text-brand-text-secondary dark:text-stone-400 hover:bg-brand-cream-dark dark:hover:bg-stone-700'}">${translate('turkish')}</button>
-            <span class="text-brand-text-secondary dark:text-stone-500 mx-1">|</span>
-            <button id="lang-en" class="px-3 py-1 text-sm rounded-md ${currentLang === 'en' ? 'bg-brand-green text-white font-bold' : 'text-brand-text-secondary dark:text-stone-400 hover:bg-brand-cream-dark dark:hover:bg-stone-700'}">${translate('english')}</button>
-            <span class="text-brand-text-secondary dark:text-stone-500 mx-1">|</span>
-            <button id="theme-toggle-btn-login" class="px-3 py-1 text-sm rounded-md text-brand-text-secondary dark:text-stone-400 hover:bg-brand-cream-dark dark:hover:bg-stone-700 inline-flex items-center">
-                ${currentTheme === 'light' ? '<i data-lucide="moon" class="h-4 w-4 mr-1"></i>' : '<i data-lucide="sun" class="h-4 w-4 mr-1"></i>'}
-                ${currentTheme === 'light' ? translate('darkMode') : translate('lightMode')}
-            </button>
-        </div>
-        
-      </div>
-    </div>
-  `;
+    notes.forEach(n => { if(n.reminderTime && new Date(n.reminderTime).getTime() < now && !n.alerted) expiredItems.push({type: 'Not', ...n}); });
+    orders.forEach(o => { if(o.reminderTime && new Date(o.reminderTime).getTime() < now && !o.alerted) expiredItems.push({type: 'Sipariş', ...o}); });
 
-  lucide.createIcons();
-  
-  const loginForm = document.getElementById('login-form');
-  const loginError = document.getElementById('login-error');
-  let isLogin = true;
-
-  document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
-  document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
-  
-  document.getElementById('theme-toggle-btn-login').addEventListener('click', () => {
-      toggleThemeMode();
-      renderLogin(); 
-  });
-
-
-  document.getElementById('toggle-register').addEventListener('click', () => {
-    isLogin = !isLogin;
-    document.getElementById('login-title').textContent = isLogin ? translate('loginTitle') : translate('registerButton');
-    document.querySelector('button[type="submit"]').textContent = isLogin ? translate('loginButton') : translate('registerButton');
-    loginError.className = 'hidden p-3 rounded-lg text-sm mb-4 text-center';
-    document.getElementById('login-email').value = '';
-    document.getElementById('login-password').value = '';
-  });
-  
-  document.getElementById('quick-switch-login').addEventListener('click', renderAccountSwitchModal);
-
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    loginError.className = 'hidden p-3 rounded-lg text-sm mb-4 text-center';
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const password = document.getElementById('login-password').value;
-
-    if (!email || !password) {
-      loginError.textContent = translate('errorEmailPass');
-      loginError.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200';
-      return;
+    if (expiredItems.length > 0) {
+        let html = `<p class="mb-2">${translate('alertExpiredBody')}</p><ul class="list-disc pl-5 text-red-600 font-bold">`;
+        expiredItems.forEach(i => html += `<li>${i.type}: ${i.title || i.name}</li>`);
+        html += `</ul>`;
+        showCustomModal(translate('alertExpired'), html, false);
     }
-
-    const users = loadAllUsers();
-
-    if (isLogin) {
-        const userData = users[email];
-        if (userData && userData.password === password) {
-            if (userData.isBanned) {
-                showCustomModal(translate('errorBannedTitle'), translate('errorBanned', {email: email}), false);
-                return;
-            }
-            addToQuickLogin(email);
-            switchUser(email); 
-        } else {
-            loginError.textContent = translate('errorWrongCreds');
-            loginError.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200';
-        }
-    } else {
-      // register
-      if (users[email] && users[email].isBanned) {
-       loginError.textContent = translate('errorBannedMail', {email: email});
-       loginError.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200';
-       return;
-      }
-      
-      if (users[email]) {
-        loginError.textContent = translate('errorMailInUse');
-        loginError.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200';
-      } else {
-        const isUserBannedByExample = email === BANNED_EMAIL_EXAMPLE || email.includes('ksjdjal@gmail.com');
-        
-        users[email] = { 
-            password: password, 
-            isAdmin: false, 
-            subscription: 'none',
-            isBanned: isUserBannedByExample, 
-            createdAt_ms: Date.now()
-        };
-
-        saveAllUsers(users);
-        
-        if (users[email].isBanned) {
-             showCustomModal(translate('errorBannedRegisterTitle'), translate('errorBannedRegister', {email: email}), false);
-             render();
-        } else {
-             loginError.textContent = translate('successRegister');
-             loginError.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200';
-             addToQuickLogin(email);
-             setTimeout(() => switchUser(email), 600);
-        }
-      }
-    }
-  });
 }
 
-/**
- * Hızlı Hesap Değiştirme Modalı
- */
+/* --- Hızlı Geçiş Modalı --- */
 function renderAccountSwitchModal() {
-    const users = loadAllUsers();
-    const quickLoginEmails = loadQuickLoginAccounts();
+    const accs = loadQuickLoginAccounts();
+    let html = `<h3 class="font-bold mb-2 dark:text-white">${translate('switchAccountLabel')}</h3>
+    <div class="space-y-2 max-h-60 overflow-y-auto">`;
     
-    const userEmails = quickLoginEmails.filter(email => {
-        if (email === currentUser) return false;
-        const user = users[email];
-        if (!user) return false; 
-        if (user.isAdmin) return false;
-        return true;
+    accs.forEach(email => {
+        html += `
+        <div class="flex items-center justify-between bg-gray-50 dark:bg-stone-700 p-3 rounded border dark:border-stone-600">
+            <button onclick="doQuickLogin('${email}')" class="text-left flex-grow font-medium dark:text-white">${email}</button>
+            <button onclick="delQuickLogin('${email}')" class="text-red-500 hover:text-red-700 ml-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </div>`;
     });
+    html += `</div>`;
     
-    let userListHtml = '';
-    if (userEmails.length > 0) {
-        userListHtml = `
-            <div class="mb-4">
-                <p class="text-sm font-semibold text-brand-text dark:text-brand-cream mb-2">${translate('switchAccountLabel')}</p>
-                <div class="space-y-2 max-h-40 overflow-y-auto p-2 border border-brand-cream-dark dark:border-stone-600 rounded-lg bg-gray-50 dark:bg-stone-700">
-                    ${userEmails.map(email => {
-                        const user = users[email];
-                        return `
-                        <div class="flex items-center space-x-2">
-                            <button data-email="${email}" class="quick-switch-user w-full text-left px-3 py-2 text-sm font-medium text-brand-text dark:text-brand-cream bg-white dark:bg-stone-800 hover:bg-brand-green-light/20 dark:hover:bg-brand-green/20 rounded-md shadow-sm transition duration-150 flex justify-between items-center">
-                                <span class="break-all">${email}</span>
-                                <span class="flex-shrink-0 ml-2">
-                                    ${user.isBanned ? `<span class="text-red-500 text-xs font-bold">${translate('bannedLabel')}</span>` : ''}
-                                    <i data-lucide="log-in" class="h-4 w-4 text-brand-green inline-block ml-1"></i>
-                                </span>
-                            </button>
-                            <button data-email="${email}" title="${translate('deleteFromList')}" class="delete-quick-login-btn flex-shrink-0 p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-md transition duration-150">
-                                <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            </button>
-                        </div>
-                    `;
-                    }).join('')}
+    showCustomModal(translate('accountSwitch'), html, false, null, null, {cancelText: translate('close')});
+    lucide.createIcons();
+    
+    window.doQuickLogin = (email) => {
+        localStorage.setItem('current_user', email); currentUser = email; 
+        document.getElementById('custom-modal-backdrop').classList.add('hidden');
+        render();
+    };
+    window.delQuickLogin = (email) => {
+        if(confirm(translate('quickLoginDeleteBody'))) {
+            removeFromQuickLogin(email);
+            renderAccountSwitchModal();
+        }
+    };
+}
+
+/* --- Abonelik Modalı --- */
+function renderSubscriptionModal() {
+    const cfg = loadConfig();
+    const users = loadAllUsers();
+    const isAdmin = (users[currentUser] || {}).isAdmin;
+    
+    const modalContent = `
+        <div class="space-y-4">
+            <div class="p-4 border rounded-lg bg-white dark:bg-stone-700 shadow-sm">
+                <h4 class="font-bold text-lg dark:text-white text-brand-green mb-2">Aylık Paketler</h4>
+                <ul class="list-disc pl-5 text-sm dark:text-gray-300 space-y-1">
+                    <li>${translate('subPrice1', {price: '$'+cfg.prices.p1})}</li>
+                    <li>${translate('subPrice3', {price: '$'+cfg.prices.p3})}</li>
+                    <li>${translate('subPrice12', {price: '$'+cfg.prices.p12})}</li>
+                </ul>
+                <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">Avantajlar: Sınırsız Kayıt, Gelişmiş Notlar, Dosya Yükleme</div>
+                <a href="https://wa.me/994707841414" target="_blank" class="block mt-3 bg-green-600 text-white text-center py-2 rounded font-bold hover:bg-green-700 transition">WhatsApp ile Satın Al</a>
+            </div>
+            
+            ${isAdmin ? `
+            <div class="p-4 border border-yellow-500 rounded-lg bg-yellow-50 dark:bg-stone-800 mt-4">
+                <h5 class="font-bold text-yellow-700 dark:text-yellow-500 mb-2">${translate('subAdminEdit')}</h5>
+                <div class="grid grid-cols-3 gap-2">
+                    <input id="p1" type="number" value="${cfg.prices.p1}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
+                    <input id="p3" type="number" value="${cfg.prices.p3}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
+                    <input id="p12" type="number" value="${cfg.prices.p12}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
+                </div>
+                <button id="save-prices-btn" class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700">Fiyatları Kaydet</button>
+            </div>` : ''}
+        </div>
+    `;
+    
+    showCustomModal(translate('subModalTitle'), modalContent, false, null, null, { cancelText: translate('close') });
+    
+    if(isAdmin) {
+        document.getElementById('save-prices-btn').onclick = () => {
+            cfg.prices.p1 = document.getElementById('p1').value;
+            cfg.prices.p3 = document.getElementById('p3').value;
+            cfg.prices.p12 = document.getElementById('p12').value;
+            saveConfig(cfg);
+            showCustomModal('Başarılı', translate('adminPriceSaved'), false);
+        };
+    }
+}
+
+/* --- Login Ekranı --- */
+function renderLogin(target) {
+    target.innerHTML = `
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="w-full max-w-md bg-white/90 dark:bg-stone-800/90 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-200 dark:border-stone-700 relative z-10">
+            <div class="flex justify-center mb-4"><img src="logo.jpg" class="h-16 w-auto rounded-xl shadow-lg" onerror="this.style.display='none'"></div>
+            <h2 class="text-3xl font-bold text-center text-brand-green dark:text-green-400 mb-6">${translate('loginTitle')}</h2>
+            
+            <div class="mb-4 p-3 text-xs bg-gray-100 dark:bg-stone-900 dark:text-gray-300 rounded border h-24 overflow-y-auto">
+                <strong>${translate('rulesTitle')}:</strong><br>${translate('rulesContent')}
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <input id="login-email" type="email" placeholder="${translate('emailPlaceholder')}" class="w-full px-5 py-3 rounded-xl bg-white dark:bg-stone-700 border dark:border-stone-600 dark:text-white outline-none focus:ring-2 focus:ring-green-500" required>
+                <input id="login-password" type="password" placeholder="${translate('passwordPlaceholder')}" class="w-full px-5 py-3 rounded-xl bg-white dark:bg-stone-700 border dark:border-stone-600 dark:text-white outline-none focus:ring-2 focus:ring-green-500" required>
+                
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="terms-check" class="w-4 h-4 text-green-600 rounded focus:ring-green-500">
+                    <label for="terms-check" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">${translate('termsLabel')}</label>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-brand-green hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg">${translate('loginButton')}</button>
+            </form>
+            
+            <div class="flex justify-between mt-4 text-sm px-2">
+                <button id="toggle-register" class="text-green-600 font-bold hover:underline">${translate('registerNow')}</button>
+                <button id="quick-switch-btn" class="text-blue-500 font-bold hover:underline">${translate('accountSwitch')}</button>
+            </div>
+
+            <div class="text-center mt-6 pt-4 border-t border-gray-200 dark:border-stone-600 flex justify-center items-center space-x-4 text-sm">
+                <button onclick="setLanguage('tr')" class="${currentLang==='tr'?'font-bold text-green-600 dark:text-green-400':''}">TR</button>
+                <button onclick="setLanguage('en')" class="${currentLang==='en'?'font-bold text-green-600 dark:text-green-400':''}">EN</button>
+                <button id="theme-toggle-btn-login" class="ml-4"></button>
+            </div>
+        </div>
+    </div>`;
+
+    updateThemeButton(document.getElementById('theme-toggle-btn-login'));
+    document.getElementById('theme-toggle-btn-login').onclick = () => { toggleTheme(); render(); };
+
+    const form = document.getElementById('login-form');
+    let isRegister = false;
+
+    document.getElementById('toggle-register').onclick = (e) => {
+        e.preventDefault(); isRegister = !isRegister;
+        form.querySelector('button').textContent = isRegister ? translate('registerButton') : translate('loginButton');
+    };
+    
+    document.getElementById('quick-switch-btn').onclick = renderAccountSwitchModal;
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        if (!document.getElementById('terms-check').checked) { showCustomModal('!', translate('termsError')); return; }
+        
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const password = document.getElementById('login-password').value;
+        const users = loadAllUsers();
+
+        if (isRegister) {
+            if (users[email]) return showCustomModal('!', translate('errorMailInUse'));
+            users[email] = { password, isAdmin: false, subscription: 'none', createdAt_ms: Date.now() };
+            saveAllUsers(users);
+            addToQuickLogin(email);
+            localStorage.setItem('current_user', email); currentUser = email; render();
+        } else {
+            if (users[email] && users[email].password === password) {
+                if(users[email].isBanned) return showCustomModal('!', translate('errorBanned', {email}));
+                addToQuickLogin(email);
+                localStorage.setItem('current_user', email); currentUser = email; render();
+            } else {
+                showCustomModal('!', translate('errorWrongCreds'));
+            }
+        }
+    };
+}
+
+/* --- Not Paneli --- */
+function renderNotesPanel(target) {
+    const key = 'notes_list_' + encodeURIComponent(currentUser);
+    let notes = JSON.parse(localStorage.getItem(key) || '[]');
+
+    const handleAddNote = () => {
+        const title = document.getElementById('n-title').value;
+        const body = document.getElementById('n-body').value;
+        const date = document.getElementById('n-date').value;
+        const fileInput = document.getElementById('n-file');
+        
+        if(!title) return alert('Başlık gerekli');
+
+        const save = (fileData) => {
+            notes.push({ id: generateId(), title, body, reminderTime: date, file: fileData, alerted: false });
+            localStorage.setItem(key, JSON.stringify(notes));
+            renderNotesPanel(target);
+        };
+
+        if(fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => save(e.target.result);
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            save(null);
+        }
+    };
+
+    window.delNote = (id) => {
+        notes = notes.filter(n => n.id !== id);
+        localStorage.setItem(key, JSON.stringify(notes));
+        renderNotesPanel(target);
+    };
+
+    let listHtml = notes.map(n => `
+        <div class="bg-white dark:bg-stone-700 p-4 rounded shadow mb-4 border border-gray-200 dark:border-stone-600 relative">
+            <div class="flex justify-between">
+                <h4 class="font-bold text-lg dark:text-white">${n.title}</h4>
+                <button onclick="window.delNote('${n.id}')" class="text-red-500"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1 whitespace-pre-wrap">${n.body}</p>
+            ${n.file ? `<img src="${n.file}" class="mt-3 max-h-40 rounded border">` : ''}
+            ${n.reminderTime ? `<div class="mt-2 text-xs text-blue-600 dark:text-blue-400 font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(n.reminderTime).toLocaleString()}</div>` : ''}
+        </div>
+    `).reverse().join('');
+
+    target.innerHTML = `
+        <div class="min-h-screen p-4 md:p-8 relative z-10">
+            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
+                <h1 class="text-3xl font-bold text-blue-600 flex items-center"><i data-lucide="notebook-tabs" class="mr-2"></i>${translate('notesTitle')}</h1>
+                <button id="back-dash" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium">Geri</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-white/90 dark:bg-stone-800/90 p-5 rounded-xl border dark:border-stone-700 shadow-lg h-fit backdrop-blur">
+                    <h3 class="font-bold mb-3 dark:text-white border-b pb-2">${translate('addNote')}</h3>
+                    <input id="n-title" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('noteTitlePh')}">
+                    <textarea id="n-body" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white h-32" placeholder="${translate('noteBodyPh')}"></textarea>
+                    <div class="mb-2">
+                        <label class="text-xs dark:text-gray-400 block mb-1">${translate('noteFile')}</label>
+                        <input type="file" id="n-file" class="w-full text-sm dark:text-gray-300">
+                    </div>
+                    <label class="text-xs dark:text-gray-400 block mb-1">${translate('noteDate')}</label>
+                    <input type="datetime-local" id="n-date" class="w-full mb-4 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white">
+                    <button id="add-n-btn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-bold shadow">${translate('saveNote')}</button>
+                </div>
+                <div class="lg:col-span-2">
+                    ${listHtml || '<p class="text-center opacity-50 dark:text-white">Henüz not yok.</p>'}
                 </div>
             </div>
-            <div class="border-t border-brand-cream-dark dark:border-stone-600 pt-4 mb-4"></div>
-        `;
-    }
-
-    const newAccountFormHtml = `
-        <h4 class="text-sm font-semibold text-brand-text dark:text-brand-cream mb-2">${translate('createAccountLabel')}</h4>
-        <p id="switch-error" class="hidden p-2 rounded-lg text-xs mb-3 text-center"></p>
-        <form id="new-account-form" class="space-y-3">
-            <input id="new-email" type="email" placeholder="${translate('newEmailPlaceholder')}" class="w-full px-4 py-2 border border-gray-300 dark:border-stone-600 dark:bg-stone-700 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition duration-150" required />
-            <input id="new-password" type="password" placeholder="${translate('newPasswordPlaceholder')}" class="w-full px-4 py-2 border border-gray-300 dark:border-stone-600 dark:bg-stone-700 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition duration-150" required />
-            <button type="submit" class="w-full py-2 bg-brand-green hover:bg-brand-green-dark text-white font-bold rounded-lg transition duration-200">${translate('registerAndSwitchButton')}</button>
-        </form>
+        </div>
     `;
-
-    showCustomModal(
-        translate('accountSwitchTitle'),
-        userListHtml + newAccountFormHtml,
-        false, 
-        null, 
-        null,
-        { 
-            cancelText: translate('close'), 
-            maxWidth: 'max-w-md'
-        }
-    );
     
     lucide.createIcons();
+    document.getElementById('back-dash').onclick = () => { currentView = 'dashboard'; render(); };
+    document.getElementById('add-n-btn').onclick = handleAddNote;
+}
 
-    document.querySelectorAll('.quick-switch-user').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const email = e.currentTarget.getAttribute('data-email');
-            const user = users[email];
-            
-            if (user && user.isBanned) {
-                 document.getElementById('custom-modal-backdrop').classList.add('hidden');
-                 showCustomModal(translate('errorBannedTitle'), translate('errorBanned', {email: email}), false);
-                 return;
-            }
-            
-            switchUser(email);
-            document.getElementById('custom-modal-backdrop').classList.add('hidden');
+/* --- Sipariş Paneli --- */
+function renderOrdersPanel(target) {
+    const key = 'orders_data_' + encodeURIComponent(currentUser);
+    let orders = JSON.parse(localStorage.getItem(key) || '[]');
+
+    const handleSave = () => {
+        const name = document.getElementById('o-name').value;
+        const req = document.getElementById('o-req').value;
+        const amt = document.getElementById('o-amt').value;
+        const note = document.getElementById('o-note').value;
+        const date = document.getElementById('o-date').value;
+        
+        if(!name) return alert('İsim gerekli');
+        orders.push({ id: generateId(), name, req, amount: amt, note, reminderTime: date, createdAt: Date.now(), alerted: false });
+        localStorage.setItem(key, JSON.stringify(orders));
+        renderOrdersPanel(target);
+    };
+
+    window.delOrd = (id) => {
+        orders = orders.filter(o => o.id !== id);
+        localStorage.setItem(key, JSON.stringify(orders));
+        renderOrdersPanel(target);
+    };
+
+    window.addToMet = (id) => {
+        const order = orders.find(o => o.id === id);
+        if(!order) return;
+        
+        showCustomModal('Onay', translate('addToMetricsConfirm', {amount: order.amount}), true, () => {
+            const metricKey = 'dashboard_data_' + encodeURIComponent(currentUser.toLowerCase());
+            let metrics = JSON.parse(localStorage.getItem(metricKey) || '[]');
+            metrics.push({ 
+                id: generateId(), 
+                dmCount: 0, adSpend: 0, salesCount: 1, 
+                revenue: parseFloat(order.amount) || 0, 
+                createdAt_ms: Date.now() 
+            });
+            localStorage.setItem(metricKey, JSON.stringify(metrics));
+            alert('Gelir olarak eklendi!');
         });
-    });
+    };
+
+    let listHtml = orders.map(o => `
+        <div class="bg-white dark:bg-stone-700 p-4 rounded shadow mb-3 border border-purple-200 dark:border-stone-600 relative">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="font-bold text-lg dark:text-white">${o.name}</h4>
+                    <div class="text-xs text-gray-500">${new Date(o.createdAt).toLocaleDateString()}</div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="window.addToMet('${o.id}')" class="text-green-600 hover:text-green-800 p-1 bg-green-100 rounded" title="${translate('addToMetrics')}"><i data-lucide="bar-chart-big" class="h-5 w-5"></i></button>
+                    <button onclick="window.delOrd('${o.id}')" class="text-red-500 hover:text-red-700 p-1 bg-red-100 rounded"><i data-lucide="trash-2" class="h-5 w-5"></i></button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2 text-sm dark:text-gray-200">
+                <p><strong>İstek:</strong> ${o.req}</p>
+                <p><strong>Tutar:</strong> ${o.amount}$</p>
+                <p class="col-span-2"><strong>Not:</strong> ${o.note}</p>
+                ${o.reminderTime ? `<p class="col-span-2 text-red-500 font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(o.reminderTime).toLocaleString()}</p>` : ''}
+            </div>
+        </div>
+    `).reverse().join('');
+
+    target.innerHTML = `
+        <div class="min-h-screen p-4 md:p-8 relative z-10">
+            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
+                <h1 class="text-3xl font-bold text-purple-600 flex items-center"><i data-lucide="shopping-cart" class="mr-2"></i>${translate('ordersTitle')}</h1>
+                <button id="back-dash" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium">Geri</button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-white/90 dark:bg-stone-800/90 p-5 rounded-xl border dark:border-stone-700 shadow-lg h-fit backdrop-blur">
+                    <input id="o-name" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderName')}">
+                    <input id="o-req" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderReq')}">
+                    <input id="o-amt" type="number" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderAmt')}">
+                    <textarea id="o-note" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderNote')}"></textarea>
+                    <label class="text-xs dark:text-gray-400 block mb-1">${translate('orderDate')}</label>
+                    <input type="datetime-local" id="o-date" class="w-full mb-4 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white">
+                    <button id="add-o-btn" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 font-bold shadow">${translate('saveOrder')}</button>
+                </div>
+                <div class="lg:col-span-2">
+                    ${listHtml || '<p class="text-center opacity-50 dark:text-white">Sipariş yok.</p>'}
+                </div>
+            </div>
+        </div>
+    `;
     
-    document.querySelectorAll('.delete-quick-login-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const email = e.currentTarget.getAttribute('data-email');
-            
-            showCustomModal(
-                translate('quickLoginDeleteTitle'),
-                translate('quickLoginDeleteBody', {email: email}),
-                true,
-                () => {
-                    removeFromQuickLogin(email);
-                    renderAccountSwitchModal();
-                },
-                null,
-                { 
-                    confirmText: translate('deleteFromList'),
-                    confirmClass: 'px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 w-full sm:w-auto',
-                    maxWidth: 'max-w-md'
-                }
-            );
+    lucide.createIcons();
+    document.getElementById('back-dash').onclick = () => { currentView = 'dashboard'; render(); };
+    document.getElementById('add-o-btn').onclick = handleSave;
+}
+
+/* --- Ana Dashboard --- */
+function renderDashboard(target) {
+    const users = loadAllUsers();
+    const u = users[currentUser] || {};
+    const sub = u.subscription || 'none';
+    const isAdmin = u.isAdmin;
+
+    target.innerHTML = `
+        <div class="min-h-screen p-4 md:p-8 relative z-10">
+            <!-- Başlık: z-50 ile her şeyin üstünde -->
+            <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white/80 dark:bg-stone-800/80 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700 relative z-50">
+                <div class="flex items-center space-x-3">
+                    <img src="logo.jpg" class="h-10 w-auto rounded" onerror="this.style.display='none'">
+                    <h1 class="text-3xl font-extrabold text-green-800 dark:text-green-400 tracking-tight">${translate('dashboardTitle')}</h1>
+                </div>
+                <div class="flex flex-wrap justify-center gap-3 mt-4 md:mt-0 items-center">
+                    ${(sub === 'diamond' || isAdmin) ? `
+                        <button onclick="currentView='orders';render()" class="bg-purple-500 text-white px-3 py-2 rounded-lg shadow hover:bg-purple-600 flex items-center transition"><i data-lucide="shopping-cart" class="w-4 h-4 mr-2"></i> ${translate('orders')}</button>
+                        <button onclick="currentView='notes';render()" class="bg-blue-500 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-600 flex items-center transition"><i data-lucide="notebook-tabs" class="w-4 h-4 mr-2"></i> ${translate('notes')}</button>
+                    ` : ''}
+                    
+                    ${isAdmin ? `<button onclick="currentView='management';render()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition"><i data-lucide="shield" class="w-4 h-4 mr-2"></i> Admin</button>` : ''}
+                    
+                    ${(sub === 'none' && !isAdmin) ? `<button onclick="renderSubscriptionModal()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition animate-pulse"><i data-lucide="gem" class="w-4 h-4 mr-2"></i> ${translate('upgradeSubscription')}</button>` : ''}
+                    
+                    <!-- Profil Dropdown -->
+                    <div class="relative inline-block text-left">
+                        <button id="profile-btn" class="bg-brand-green hover:bg-brand-green-dark text-white px-4 py-2 rounded-lg shadow flex items-center">
+                            <i data-lucide="user" class="w-4 h-4 mr-2"></i> Hesabım
+                        </button>
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-stone-800 rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
+                             <button onclick="showCredentials()" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="info" class="w-4 h-4 mr-2"></i> ${translate('viewCredentials')}</button>
+                             <button onclick="renderAccountSwitchModal()" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i> ${translate('accountSwitch')}</button>
+                             <button id="theme-toggle-btn-dash" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">Tema</button>
+                             
+                             <!-- Dil Seçenekleri -->
+                             <div class="border-t border-gray-100 dark:border-stone-700 my-1"></div>
+                             <button onclick="setLanguage('tr')" class="block px-4 py-2 text-sm ${currentLang==='tr'?'text-green-600 font-bold':'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">🇹🇷 Türkçe</button>
+                             <button onclick="setLanguage('en')" class="block px-4 py-2 text-sm ${currentLang==='en'?'text-green-600 font-bold':'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">🇺🇸 English</button>
+
+                             <div class="border-t border-gray-100 dark:border-stone-700 my-1"></div>
+                             <button onclick="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i> ${translate('logout')}</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-0">
+                <!-- Veri Girişi -->
+                <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+                    <h2 class="text-xl font-bold mb-4 dark:text-white">${translate('dailyEntryTitle')}</h2>
+                    <form id="add-data-form" class="space-y-3">
+                        <input id="dmCount" type="number" placeholder="${translate('dmCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="adSpend" type="number" step="0.01" placeholder="${translate('adSpendLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="salesCount" type="number" placeholder="${translate('salesCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="revenue" type="number" step="0.01" placeholder="${translate('revenueLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <button type="submit" class="w-full bg-brand-green text-white py-2 rounded hover:bg-green-700 font-bold shadow transition transform hover:scale-[1.02]">${translate('saveMetricsButton')}</button>
+                    </form>
+                </section>
+                <!-- Grafik -->
+                <section class="lg:col-span-2 bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+                    <div id="chart-area" class="w-full h-64"></div>
+                </section>
+            </div>
+
+            <!-- Tablo -->
+            <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+                <h2 class="text-xl font-bold mb-4 dark:text-white">${translate('recordsTitle')}</h2>
+                <div id="table-area" class="overflow-x-auto"></div>
+            </section>
+        </div>
+    `;
+
+    lucide.createIcons();
+    checkReminders(); 
+    
+    // Profil Dropdown Logic
+    const pBtn = document.getElementById('profile-btn');
+    const pDrop = document.getElementById('profile-dropdown');
+    if(pBtn) {
+        pBtn.onclick = (e) => { e.stopPropagation(); pDrop.classList.toggle('hidden'); };
+        document.onclick = () => pDrop.classList.add('hidden');
+        pDrop.onclick = (e) => e.stopPropagation();
+    }
+
+    // Tema butonu dashboard içinde
+    const themeBtnDash = document.getElementById('theme-toggle-btn-dash');
+    if(themeBtnDash) {
+        updateThemeButton(themeBtnDash);
+        themeBtnDash.onclick = () => { toggleTheme(); updateThemeButton(themeBtnDash); };
+    }
+
+    window.logout = () => { localStorage.removeItem('current_user'); currentUser = null; render(); };
+    window.showCredentials = () => {
+         let subText = u.subscription === 'diamond' ? translate('subDiamond') : translate('subFree');
+         if (u.isAdmin) subText = `Admin (${subText})`;
+         showCustomModal(translate('accountInfoTitle'), translate('accountInfoBody', { email: currentUser, password: u.password, subText, subClass: 'text-yellow-600' }), false);
+    };
+
+    // Metrik Verileri
+    const key = 'dashboard_data_' + encodeURIComponent(currentUser.toLowerCase());
+    const data = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    // Grafik
+    if(data.length) {
+        const ctx = document.createElement('canvas');
+        document.getElementById('chart-area').innerHTML = '';
+        document.getElementById('chart-area').appendChild(ctx);
+        
+        const totalDm = data.reduce((s,i) => s + (Number(i.dmCount)||0), 0);
+        const totalAd = data.reduce((s,i) => s + (Number(i.adSpend)||0), 0);
+        const totalSales = data.reduce((s,i) => s + (Number(i.salesCount)||0), 0);
+        const totalRev = data.reduce((s,i) => s + (Number(i.revenue)||0), 0);
+        const net = totalRev - totalAd;
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['DM', 'Reklam', 'Satış', 'Gelir', 'Net Kâr'],
+                datasets: [{
+                    label: 'Toplam',
+                    data: [totalDm, totalAd, totalSales, totalRev, net],
+                    backgroundColor: ['#0ea5e9', '#ef4444', '#0ea5e9', '#eab308', net>=0?'#22c55e':'#ef4444']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
         });
-    });
+    } else {
+        document.getElementById('chart-area').innerHTML = '<p class="text-center text-gray-500 py-10 dark:text-gray-400">Veri Yok</p>';
+    }
 
-    document.getElementById('new-account-form').addEventListener('submit', (e) => {
+    // Tablo
+    const tbody = data.map(d => `
+        <tr class="border-b dark:border-stone-600 hover:bg-gray-50 dark:hover:bg-stone-700">
+            <td class="p-3 dark:text-white text-sm">${new Date(d.createdAt_ms).toLocaleDateString()}</td>
+            <td class="p-3 dark:text-white text-sm">${d.dmCount}</td>
+            <td class="p-3 dark:text-white text-sm">${d.adSpend}$</td>
+            <td class="p-3 dark:text-white text-sm">${d.salesCount}</td>
+            <td class="p-3 dark:text-white text-sm">${d.revenue}$</td>
+            <td class="p-3 font-bold text-sm ${(d.revenue-d.adSpend)>=0?'text-green-600':'text-red-600'}">${(d.revenue-d.adSpend).toFixed(2)}$</td>
+            <td class="p-3">
+                ${(sub === 'diamond' || isAdmin) ? `<button onclick="deleteMetric('${d.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+            </td>
+        </tr>
+    `).reverse().join('');
+    
+    document.getElementById('table-area').innerHTML = `
+        <table class="w-full text-left">
+            <thead class="bg-gray-100 dark:bg-stone-700 text-xs uppercase text-gray-500 dark:text-gray-300">
+                <tr><th class="p-3">Tarih</th><th class="p-3">DM</th><th class="p-3">Reklam</th><th class="p-3">Satış</th><th class="p-3">Gelir</th><th class="p-3">Kâr</th><th class="p-3">İşlem</th></tr>
+            </thead>
+            <tbody>${tbody || '<tr><td colspan="7" class="p-4 text-center dark:text-gray-400">Kayıt yok.</td></tr>'}</tbody>
+        </table>
+    `;
+    lucide.createIcons();
+
+    window.deleteMetric = (id) => {
+        const newData = data.filter(d => d.id !== id);
+        localStorage.setItem(key, JSON.stringify(newData));
+        render();
+    };
+
+    document.getElementById('add-data-form').onsubmit = (e) => {
         e.preventDefault();
-        const errorDisplay = document.getElementById('switch-error');
-        errorDisplay.className = 'hidden p-2 rounded-lg text-xs mb-3 text-center';
-        
-        const email = document.getElementById('new-email').value.trim().toLowerCase();
-        const password = document.getElementById('new-password').value;
-
-        if (!email || !password) {
-            errorDisplay.textContent = translate('errorEmailPass');
-            errorDisplay.className = 'p-2 rounded-lg text-xs mb-3 text-center bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200';
-            return;
-        }
-
-        const users = loadAllUsers();
-        
-        if (users[email]) {
-            errorDisplay.textContent = translate('errorMailInUseSwitch');
-            errorDisplay.className = 'p-2 rounded-lg text-xs mb-3 text-center bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200';
-            return;
+        // Ücretsiz Limit Kontrolü
+        if(sub === 'none' && data.length >= FREE_TIER_LIMIT) { 
+             showCustomModal(translate('errorFreeLimitTitle'), translate('errorFreeLimitBody', {limit: FREE_TIER_LIMIT}), false); 
+             setTimeout(renderSubscriptionModal, 1500);
+             return; 
         }
         
-        const isUserBannedByExample = email === BANNED_EMAIL_EXAMPLE || email.includes('ksjdjal@gmail.com');
-        
-        users[email] = { 
-            password: password, 
-            isAdmin: false, 
-            subscription: 'none', 
-            isBanned: isUserBannedByExample, 
+        const newItem = {
+            id: generateId(),
+            dmCount: document.getElementById('dmCount').value || 0,
+            adSpend: document.getElementById('adSpend').value || 0,
+            salesCount: document.getElementById('salesCount').value || 0,
+            revenue: document.getElementById('revenue').value || 0,
             createdAt_ms: Date.now()
         };
-        saveAllUsers(users);
-
-        if (users[email].isBanned) {
-            document.getElementById('custom-modal-backdrop').classList.add('hidden'); 
-             showCustomModal(translate('errorBannedRegisterTitle'), translate('errorBannedRegister', {email: email}), false);
-        } else {
-            errorDisplay.textContent = translate('successRegisterSwitch');
-            errorDisplay.className = 'p-2 rounded-lg text-xs mb-3 text-center bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200';
-            addToQuickLogin(email);
-            setTimeout(() => {
-                document.getElementById('custom-modal-backdrop').classList.add('hidden');
-                switchUser(email);
-            }, 600);
-        }
-    });
-}
-
-
-/* ---------- Abonelik Modalı ---------- */
-function renderSubscriptionModal() {
-    const users = loadAllUsers();
-    const userSub = (users[currentUser] || {}).subscription || 'none';
-
-    const modalContent = `
-        <p class="text-lg text-brand-text-secondary dark:text-stone-300 mb-6 text-center">${translate('subModalBody')}</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Ücretsiz Plan -->
-            <div class="border-2 ${userSub === 'none' ? 'border-brand-green' : 'border-brand-cream-dark dark:border-stone-700'} p-6 rounded-2xl relative bg-white dark:bg-stone-800">
-                ${userSub === 'none' ? `<span class="absolute top-0 -translate-y-1/2 bg-brand-green text-white text-xs font-bold px-3 py-1 rounded-full">${translate('subFreeButton')}</span>` : ''}
-                <h4 class="text-2xl font-bold text-brand-text dark:text-brand-cream mb-2">${translate('subFreeTitle')}</h4>
-                <p class="text-xl font-semibold text-brand-text-secondary dark:text-stone-400 mb-4">${translate('subFreePrice')}</p>
-                <ul class="space-y-2 text-brand-text-secondary dark:text-stone-300">
-                    <li class="flex items-center"><i data-lucide="check" class="h-5 w-5 text-brand-green mr-2"></i> ${translate('subFreeFeature1', {limit: FREE_TIER_LIMIT})}</li>
-                    <li class="flex items-center"><i data-lucide="check" class="h-5 w-5 text-brand-green mr-2"></i> ${translate('subFreeFeature2')}</li>
-                </ul>
-            </div>
-            
-            <!-- Elmas Plan (GÜNCELLENDİ) -->
-            <div class="border-2 ${userSub === 'diamond' ? 'border-brand-green' : 'border-brand-cream-dark dark:border-stone-700'} p-6 rounded-2xl relative bg-white dark:bg-stone-800">
-                ${userSub === 'diamond' ? `<span class="absolute top-0 -translate-y-1/2 bg-brand-green text-white text-xs font-bold px-3 py-1 rounded-full">${translate('subFreeButton')}</span>` : ''}
-                <div class="flex items-center mb-2">
-                    <i data-lucide="gem" class="h-6 w-6 text-yellow-500 mr-2"></i>
-                    <h4 class="text-2xl font-bold text-brand-text dark:text-brand-cream">${translate('subProTitle')}</h4>
-                </div>
-                <p class="text-xl font-semibold text-brand-text-secondary dark:text-stone-400 mb-4">${translate('subProPrice')}</p>
-                <ul class="space-y-2 text-brand-text-secondary dark:text-stone-300">
-                    <li class="flex items-center"><i data-lucide="check" class="h-5 w-5 text-brand-green mr-2"></i> ${translate('subProFeature1')}</li>
-                    <li class="flex items-center"><i data-lucide="check" class="h-5 w-5 text-brand-green mr-2"></i> ${translate('subProFeature2')}</li>
-                    <li class="flex items-center"><i data-lucide="check" class="h-5 w-5 text-brand-green mr-2"></i> ${translate('subProFeature3')}</li>
-                </ul>
-                ${userSub !== 'diamond' ? `
-                <a href="https://wa.me/994707841414?text=Merhaba,%20GrafLife%20Elmas%20aboneliği%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" class="block w-full text-center mt-6 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-lg transition duration-200">
-                    ${translate('subProButtonWhatsApp')}
-                </a>
-                ` : ''}
-            </div>
-        </div>
-    `;
-
-    showCustomModal(
-        translate('subModalTitle'),
-        modalContent,
-        false, 
-        null, 
-        null,
-        { 
-            cancelText: translate('close'), 
-            maxWidth: 'max-w-2xl'
-        }
-    );
-    lucide.createIcons();
-}
-
-
-/* ---------- Dashboard Component ---------- */
-function renderDashboard() {
-  const users = loadAllUsers();
-  const userData = users[currentUser] || {};
-  const userSub = userData.subscription || 'none';
-  const isAdminUser = userData.isAdmin || false;
-  const displayUserId = currentUser.split('@')[0];
-  
-  // Elmas aboneler için hareketli arka plan
-  if (userSub === 'diamond') {
-    document.body.classList.add('animated-bg');
-  } else {
-    document.body.classList.add('bg-brand-cream', 'dark:bg-stone-900');
-  }
-  
-  root.innerHTML = `
-    <div class="min-h-screen p-4 md:p-8 font-inter">
-      <!-- Header -->
-      <header class="relative z-10 flex flex-col md:flex-row justify-between items-center mb-8 bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-brand-green-dark dark:text-brand-green-light tracking-tight">${translate('dashboardTitle')}</h1>
-        
-        <div class="flex items-center flex-wrap justify-center md:justify-end space-x-3 mt-4 md:mt-0">
-          
-          <!-- YENİ: Notlarım Butonu (Sadece Elmas) -->
-          ${userSub === 'diamond' ? `
-            <button id="notes-btn" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-150 flex items-center space-x-2 mt-2 md:mt-0">
-              <i data-lucide="notebook-tabs" class="h-5 w-5"></i>
-              <span>${translate('notes')}</span>
-            </button>
-          ` : ''}
-
-          <!-- Abonelik Butonu -->
-          ${isAdminUser ? `
-            <button id="manage-panel-btn" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-150 flex items-center space-x-2 mt-2 md:mt-0">
-              <i data-lucide="${isAdminUser ? 'shield' : 'gem'}" class="h-5 w-5"></i>
-              <span>${translate('managementPanel')}</span>
-            </button>
-          ` : (userSub === 'none' ? `
-            <button id="upgrade-sub-btn" class="px-4 py-2 bg-yellow-400 text-yellow-900 font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition duration-150 flex items-center space-x-2 mt-2 md:mt-0">
-              <i data-lucide="gem" class="h-5 w-5"></i>
-              <span>${translate('upgradeSubscription')}</span>
-            </button>
-          ` : '')}
-
-          <!-- Profile Dropdown -->
-          <div class="relative inline-block text-left mt-2 md:mt-0">
-            <button id="profile-menu-btn" class="flex items-center space-x-2 px-4 py-2 bg-brand-green hover:bg-brand-green-dark text-white font-semibold rounded-lg shadow-md transition duration-150">
-              ${isAdminUser ? '<i data-lucide="shield" class="h-4 w-4 text-yellow-300" title="Admin"></i>' : (userSub === 'diamond' ? '<i data-lucide="gem" class="h-4 w-4 text-yellow-300" title="Elmas Üye"></i>' : '<i data-lucide="user" class="h-4 w-4"></i>')}
-              <span class="font-mono text-sm font-bold hidden sm:inline-block truncate max-w-[100px]">${displayUserId}</span>
-              <i data-lucide="chevron-down" class="h-4 w-4"></i>
-            </button>
-            <div id="profile-menu-dropdown" class="origin-top-right absolute right-0 mt-2 w-60 rounded-xl shadow-lg bg-white dark:bg-stone-800 ring-1 ring-black ring-opacity-5 dark:ring-stone-700 focus:outline-none hidden z-50">
-              <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="profile-menu-btn">
-                <a href="#" id="view-creds-btn" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700" role="menuitem">
-                    <i data-lucide="eye" class="h-4 w-4 mr-2 text-blue-500"></i> ${translate('viewCredentials')}
-                </a>
-                <a href="#" id="add-account-btn" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700" role="menuitem">
-                    <i data-lucide="users-2" class="h-4 w-4 mr-2 text-green-500"></i> ${translate('accountSwitch')}
-                </a>
-                
-                <!-- Dil Değiştirme -->
-                <div class="border-t border-gray-100 dark:border-stone-700"></div>
-                <div class="px-4 pt-3 pb-1 text-xs text-gray-500 dark:text-gray-400">${translate('language')}</div>
-                <a href="#" id="lang-tr-dash" class="flex items-center justify-between px-4 py-2 text-sm ${currentLang === 'tr' ? 'font-bold text-brand-green dark:text-brand-green-light' : 'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700">
-                  ${translate('turkish')} ${currentLang === 'tr' ? '<i data-lucide="check" class="h-4 w-4"></i>' : ''}
-                </a>
-                <a href="#" id="lang-en-dash" class="flex items-center justify-between px-4 py-2 text-sm ${currentLang === 'en' ? 'font-bold text-brand-green dark:text-brand-green-light' : 'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700">
-                  ${translate('english')} ${currentLang === 'en' ? '<i data-lucide="check" class="h-4 w-4"></i>' : ''}
-                </a>
-                
-                <!-- Tema Değiştirme -->
-                <div class="border-t border-gray-100 dark:border-stone-700"></div>
-                <div class="px-4 pt-3 pb-1 text-xs text-gray-500 dark:text-gray-400">${translate('theme')}</div>
-                <a href="#" id="theme-toggle-btn" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700">
-                </a>
-
-                <div class="border-t border-gray-100 dark:border-stone-700"></div>
-                <a href="#" id="logout-btn" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" role="menuitem">
-                    <i data-lucide="log-out" class="h-4 w-4 mr-2"></i> ${translate('logout')}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div id="error-container"></div>
-      <div id="success-container"></div> <!-- YENİ: Müşteri siparişi başarısı için -->
-
-      <!-- YENİ: Müşteri Sipariş Paneli (Sadece Elmas) - YUKARI TAŞINDI -->
-      ${userSub === 'diamond' ? `
-      <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl mb-8">
-        <h2 class="text-2xl font-semibold text-brand-text dark:text-brand-cream mb-1">${translate('customerLogTitle')}</h2>
-        <p class="text-brand-text-secondary dark:text-stone-400 mb-4">${translate('customerLogSubtitle')}</p>
-        <form id="add-customer-order-form" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input id="customerName" placeholder="${translate('customerName')}" type="text" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition" required />
-            <input id="customerRequest" placeholder="${translate('customerRequest')}" type="text" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none" required />
-            <input id="customerQuantity" placeholder="${translate('customerQuantity')}" type="number" min="0" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none" required />
-          </div>
-          <textarea id="customerReason" placeholder="${translate('customerReason')}" rows="2" class="w-full border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none"></textarea>
-          <textarea id="customerNote" placeholder="${translate('customerNote')}" rows="2" class="w-full border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none"></textarea>
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg focus:outline-none mt-4">${translate('saveOrder')}</button>
-        </form>
-        
-        <!-- Bugünün Siparişleri Tablosu -->
-        <h3 class="text-xl font-semibold text-brand-text dark:text-brand-cream mt-8 mb-4">${translate('todaysOrders')}</h3>
-        <div id="customer-orders-table-area" class="overflow-x-auto"></div>
-      </section>
-      ` : ''}
-
-      <!-- Günlük Grafik Girişi -->
-      <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl mb-8">
-        <h2 class="text-2xl font-semibold text-brand-text dark:text-brand-cream mb-4">${translate('dailyEntryTitle')}</h2>
-        <form id="add-data-form" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="flex flex-col">
-              <label for="dmCount" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300 mb-1">${translate('dmCountLabel')}</label>
-              <input id="dmCount" placeholder="${translate('dmCountPlaceholder')}" type="number" min="0" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition duration-150" />
-            </div>
-            <div class="flex flex-col">
-              <label for="adSpend" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300 mb-1">${translate('adSpendLabel')}</label>
-              <input id="adSpend" placeholder="${translate('adSpendPlaceholder')}" type="number" step="0.01" min="0" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-red-500 outline-none transition duration-150" />
-            </div>
-            <div class="flex flex-col">
-              <label for="salesCount" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300 mb-1">${translate('salesCountLabel')}</label>
-              <input id="salesCount" placeholder="${translate('salesCountPlaceholder')}" type="number" min="0" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition duration-150" />
-            </div>
-            <div class="flex flex-col">
-              <label for="revenue" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300 mb-1">${translate('revenueLabel')}</label>
-              <input id="revenue" placeholder="${translate('revenuePlaceholder')}" type="number" step="0.01" class="border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-brand-green outline-none transition duration-150" />
-            </div>
-          </div>
-          <button type="submit" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg focus:outline-none mt-4">${translate('saveMetricsButton')}</button>
-        </form>
-      </section>
-
-      <!-- Toplam Grafik -->
-      <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl mb-8">
-        <h2 class="text-2xl font-semibold text-brand-text dark:text-brand-cream mb-4">${translate('visualizationTitle')}</h2>
-        <div id="chart-area" class="w-full h-[250px] sm:h-[400px] max-h-[400px]"></div>
-      </section>
-
-      <!-- Detaylı Kayıtlar -->
-      <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-            <h2 class="text-2xl font-semibold text-brand-text dark:text-brand-cream">${translate('recordsTitle')}</h2>
-            <!-- YENİ: Filtre Butonları -->
-            <div id="records-filter-buttons" class="flex items-center space-x-2 mt-3 sm:mt-0">
-                <button id="filter-daily" class="px-3 py-1 text-sm font-medium rounded-md">${translate('filterDaily')}</button>
-                <button id="filter-weekly" class="px-3 py-1 text-sm font-medium rounded-md">${translate('filterWeekly')}</button>
-                ${(isAdminUser || userSub === 'diamond') ? `
-                <button id="filter-monthly" class="px-3 py-1 text-sm font-medium rounded-md">${translate('filterMonthly')}</button>
-                ` : ''}
-            </div>
-        </div>
-        <div id="table-area" class="overflow-x-auto"></div>
-      </section>
-    </div>
-  `;
-  
-  lucide.createIcons();
-
-  // Dropdown
-  const profileBtn = document.getElementById('profile-menu-btn');
-  const dropdown = document.getElementById('profile-menu-dropdown');
-  
-  document.addEventListener('click', (event) => {
-      if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
-          dropdown.classList.add('hidden');
-      }
-  }, { capture: true });
-  
-  profileBtn.addEventListener('click', () => {
-      dropdown.classList.toggle('hidden');
-  });
-  
-  // Menü linkleri
-  document.getElementById('logout-btn').addEventListener('click', () => {
-    localStorage.removeItem('current_user');
-    currentUser = null;
-    dropdown.classList.add('hidden');
-    render();
-  });
-  
-  document.getElementById('add-account-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    dropdown.classList.add('hidden');
-    renderAccountSwitchModal();
-  });
-  
-  document.getElementById('lang-tr-dash').addEventListener('click', (e) => { e.preventDefault(); setLanguage('tr'); });
-  document.getElementById('lang-en-dash').addEventListener('click', (e) => { e.preventDefault(); setLanguage('en'); });
-
-  document.getElementById('theme-toggle-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleThemeMode();
-      updateThemeToggleIcon();
-  });
-  updateThemeToggleIcon();
-
-
-  document.getElementById('view-creds-btn').addEventListener('click', () => {
-    const users = loadAllUsers();
-    const user = users[currentUser];
-    let subText = '';
-    let subClass = '';
-    
-    if (user.subscription === 'diamond') {
-        subText = translate('subDiamond');
-        subClass = 'text-yellow-600 dark:text-yellow-500';
-    } else {
-        subText = translate('subFree');
-        subClass = 'text-brand-text-secondary dark:text-stone-400';
-    }
-    
-    if (user.isAdmin) {
-        subText = `Admin (${subText})`;
-        subClass = 'text-yellow-700 dark:text-yellow-400';
-    }
-
-    showCustomModal(translate('accountInfoTitle'), 
-        translate('accountInfoBody', {
-            email: currentUser,
-            password: user ? user.password : 'Kayıtlı Değil',
-            subText: subText,
-            subClass: subClass
-        }), 
-        false);
-    dropdown.classList.add('hidden');
-  });
-
-  // Panel butonları
-  if (isAdminUser) {
-    document.getElementById('manage-panel-btn').addEventListener('click', () => {
-        currentView = 'management';
+        data.push(newItem);
+        localStorage.setItem(key, JSON.stringify(data));
         render();
-    });
-  } else if (userSub === 'none') {
-    document.getElementById('upgrade-sub-btn').addEventListener('click', () => {
-        renderSubscriptionModal();
-    });
-  }
-  
-  if (userSub === 'diamond') {
-      const notesBtn = document.getElementById('notes-btn');
-      if (notesBtn) {
-          notesBtn.addEventListener('click', () => {
-              currentView = 'notesList'; // YENİ: Not listesine git
-              render();
-          });
-      }
-      
-      // YENİ: Müşteri Sipariş Formu
-      const customerForm = document.getElementById('add-customer-order-form');
-      if (customerForm) {
-          customerForm.addEventListener('submit', (e) => {
-              e.preventDefault();
-              saveCustomerOrder();
-          });
-      }
-  }
-
-  // Dashboard'u bu kullanıcı için başlat
-  initDashboardForUser(currentUser);
+    };
 }
 
-
-/* ---------- Admin/Yönetim Paneli ---------- */
-function renderManagementPanel() {
+/* Admin Yönetim Paneli (YENİ: Fiyat ve Yetki Yönetimi) */
+function renderManagementPanel(target) {
     const users = loadAllUsers();
     const allUsers = Object.keys(users).map(email => ({ email, ...users[email] })).filter(u => u.email !== ADMIN_EMAIL);
+    const cfg = loadConfig();
 
-    if ((loadAllUsers()[currentUser] || {}).subscription === 'diamond') {
-        document.body.classList.add('animated-bg');
-    } else {
-        document.body.classList.remove('animated-bg');
-        document.body.classList.add('bg-brand-cream', 'dark:bg-stone-900');
-    }
-
-    root.innerHTML = `
-        <div class="min-h-screen p-4 md:p-8 font-inter">
-            <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-yellow-600 dark:text-yellow-400 tracking-tight flex items-center space-x-3">
-                    <i data-lucide="shield" class="h-8 w-8"></i>
-                    <span>${translate('managementPanelTitleAdmin')}</span>
-                </h1>
-                <div class="mt-4 md:mt-0">
-                    <button id="back-to-dashboard-btn" class="px-4 py-2 bg-brand-green text-white font-semibold rounded-lg shadow-md hover:bg-brand-green-dark transition duration-150 flex items-center space-x-2">
-                        <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
-                        <span>${translate('backToDashboard')}</span>
-                    </button>
-                </div>
-            </header>
-
-            <div id="admin-error-container"></div>
-            
-            <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-                <h2 class="text-2xl font-semibold text-brand-text dark:text-brand-cream mb-4">${translate('userManagementTitle')}</h2>
-                <div class="overflow-x-auto rounded-lg border border-brand-cream-dark dark:border-stone-700">
-                    <table class="min-w-full divide-y divide-brand-cream-dark dark:divide-stone-700">
-                        <thead class="bg-brand-cream-dark/30 dark:bg-stone-700/50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colEmail')}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colStatus')}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colSubscription')}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colAdmin')}</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colRegisterTime')}</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colActions')}</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-list-body" class="bg-brand-cream/50 dark:bg-stone-800/50 divide-y divide-brand-cream-dark dark:divide-stone-700">
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+    target.innerHTML = `
+    <div class="min-h-screen p-8 relative z-10">
+        <div class="flex justify-between items-center mb-6 bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
+             <h2 class="text-2xl font-bold dark:text-white">Kullanıcı Yönetimi</h2>
+             <button onclick="currentView='dashboard';render()" class="bg-gray-500 text-white px-4 py-2 rounded shadow">Geri</button>
         </div>
-    `;
-
-    lucide.createIcons();
-    
-    document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
-        currentView = 'dashboard';
-        render();
-    });
-
-    const userListBody = document.getElementById('user-list-body');
-    
-    const handleAdminAction = (targetEmail, actionType) => {
-        const users = loadAllUsers();
-        if (!users[targetEmail]) {
-            showCustomModal('Hata', 'Kullanıcı bulunamadı.', false);
-            return;
-        }
-
-        let title, content, confirmAction, confirmText, confirmClass;
-        confirmClass = 'px-5 py-2.5 text-white font-medium rounded-lg transition duration-150 w-full sm:w-auto';
-
-        if (actionType === 'toggleBan') {
-            const isCurrentlyBanned = users[targetEmail].isBanned;
-            title = isCurrentlyBanned ? translate('unbanTitle') : translate('banTitle');
-            content = isCurrentlyBanned ? translate('unbanBody', {email: targetEmail}) : translate('banBody', {email: targetEmail});
-            confirmText = isCurrentlyBanned ? translate('actionUnban') : translate('actionBan');
-            confirmClass += isCurrentlyBanned ? ' bg-green-600 hover:bg-green-700' : ' bg-red-600 hover:bg-red-700';
-            confirmAction = () => {
-                users[targetEmail].isBanned = !isCurrentlyBanned;
-                saveAllUsers(users);
-                renderManagementPanel();
-            };
-        } else if (actionType === 'toggleSub') {
-            const isCurrentlyDiamond = users[targetEmail].subscription === 'diamond';
-            title = isCurrentlyDiamond ? translate('removeDiamondTitle') : translate('makeDiamondTitle');
-            content = isCurrentlyDiamond ? translate('removeDiamondBody', {email: targetEmail}) : translate('makeDiamondBody', {email: targetEmail});
-            confirmText = isCurrentlyDiamond ? translate('actionRemoveDiamond') : translate('actionMakeDiamond');
-            confirmClass += isCurrentlyDiamond ? ' bg-red-600 hover:bg-red-700' : ' bg-yellow-500 hover:bg-yellow-600';
-            confirmAction = () => {
-                users[targetEmail].subscription = isCurrentlyDiamond ? 'none' : 'diamond';
-                saveAllUsers(users);
-                renderManagementPanel();
-            };
-        } else if (actionType === 'toggleAdmin') {
-            const isCurrentlyAdmin = users[targetEmail].isAdmin;
-            title = isCurrentlyAdmin ? translate('removeAdminTitle') : translate('makeAdminTitle');
-            content = isCurrentlyAdmin ? translate('removeAdminBody', {email: targetEmail}) : translate('makeAdminBody', {email: targetEmail});
-            confirmText = isCurrentlyAdmin ? translate('actionRemoveAdmin') : translate('actionMakeAdmin');
-            confirmClass += isCurrentlyAdmin ? ' bg-red-600 hover:bg-red-700' : ' bg-blue-600 hover:bg-blue-700';
-            confirmAction = () => {
-                users[targetEmail].isAdmin = !isCurrentlyAdmin;
-                saveAllUsers(users);
-                renderManagementPanel();
-            };
-        }
-
-        showCustomModal(title, content, true, confirmAction, null, {
-            confirmText: confirmText,
-            confirmClass: confirmClass
-        });
-    };
-
-    allUsers.forEach(user => {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-brand-cream-dark/20 dark:hover:bg-stone-700/50 transition duration-150';
         
-        const statusBadge = user.isBanned 
-            ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-100">${translate('statusBanned')}</span>`
-            : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">${translate('statusActive')}</span>`;
-
-        const subBadge = user.subscription === 'diamond'
-            ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100">${translate('subDiamond')}</span>`
-            : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">${translate('subUser')}</span>`;
-            
-        const adminBadge = user.isAdmin
-            ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100">${translate('subAdmin')}</span>`
-            : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">${translate('subUser')}</span>`;
-
-        const userRegisteredTime = timeAgo(user.createdAt_ms);
-
-        row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-text dark:text-brand-cream break-words max-w-xs">${user.email}</td>
-            <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
-            <td class="px-6 py-4 whitespace-nowrap">${subBadge}</td>
-            <td class="px-6 py-4 whitespace-nowrap">${adminBadge}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-secondary dark:text-stone-400">${userRegisteredTime}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex flex-col sm:flex-row justify-end gap-2">
-                    <button data-action="toggleBan" data-email="${user.email}" class="action-btn text-sm font-semibold p-2 rounded-md transition duration-150 ${user.isBanned ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}">
-                        ${user.isBanned ? translate('actionUnban') : translate('actionBan')}
-                    </button>
-                    <button data-action="toggleSub" data-email="${user.email}" class="action-btn text-sm font-semibold p-2 rounded-md transition duration-150 ${user.subscription === 'diamond' ? 'bg-gray-600 hover:bg-gray-700 text-white' : 'bg-yellow-500 hover:bg-yellow-600 text-yellow-900'}">
-                        ${user.subscription === 'diamond' ? translate('actionRemoveDiamond') : translate('actionMakeDiamond')}
-                    </button>
-                    <button data-action="toggleAdmin" data-email="${user.email}" class="action-btn text-sm font-semibold p-2 rounded-md transition duration-150 ${user.isAdmin ? 'bg-red-700 hover:bg-red-800 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}">
-                        ${user.isAdmin ? translate('actionRemoveAdmin') : translate('actionMakeAdmin')}
-                    </button>
-                </div>
-            </td>
-        `;
-        userListBody.appendChild(row);
-    });
-
-    userListBody.querySelectorAll('.action-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const action = e.currentTarget.getAttribute('data-action');
-            const email = e.currentTarget.getAttribute('data-email');
-            handleAdminAction(email, action);
-        });
-    });
-}
-
-/* ---------- YENİ: Not Defteri Fonksiyonları ---------- */
-
-/**
- * Notlar için localStorage anahtarı
- */
-const getNotesKey = () => 'notes_data_' + encodeURIComponent(currentUser.toLowerCase());
-
-/**
- * Tüm notları yükler (eski formatı yeni dizi formatına geçirir)
- */
-function loadAllNotes() {
-    const notesKey = getNotesKey();
-    let data = JSON.parse(localStorage.getItem(notesKey) || '[]');
-    
-    // Eski format kontrolü (Eğer bir obje ise, diziye çevir)
-    if (data && !Array.isArray(data)) {
-        const oldNote = data;
-        data = [{
-            id: generateId(),
-            title: oldNote.title || 'Eski Not',
-            body: oldNote.body || '',
-            photoBase64: null,
-            files: [],
-            createdAt_ms: Date.now()
-        }];
-        localStorage.setItem(notesKey, JSON.stringify(data)); // Yeni formata güncelle
-    }
-    
-    if (!Array.isArray(data)) {
-        data = [];
-    }
-    
-    // En yeniden eskiye sırala
-    return data.sort((a,b) => (b.createdAt_ms || 0) - (a.createdAt_ms || 0));
-}
-
-/**
- * Not dizisini kaydeder
- */
-function saveAllNotes(notes) {
-    localStorage.setItem(getNotesKey(), JSON.stringify(notes));
-}
-
-/**
- * Not Listesi görünümünü render eder
- */
-function renderNotesList() {
-    const notes = loadAllNotes();
-    
-    // Arka plan
-    document.body.classList.add('animated-bg');
-
-    let notesHtml;
-    if (notes.length === 0) {
-        notesHtml = `
-            <div class="text-center py-10 text-brand-text-secondary dark:text-stone-400 border-2 border-dashed border-brand-cream-dark dark:border-stone-700 rounded-lg">
-                <i data-lucide="notebook-pen" class="mx-auto h-12 w-12 mb-3 text-blue-500"></i>
-                <p>${translate('noNotesYet')}</p>
+        <!-- Fiyat Ayarları -->
+        <div class="bg-white dark:bg-stone-800 p-4 rounded shadow mb-6 border dark:border-stone-700">
+            <h3 class="font-bold text-brand-green mb-3 dark:text-white">${translate('adminPriceSettings')}</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div><label class="text-xs dark:text-gray-400">1 Aylık ($)</label><input id="adm-p1" type="number" value="${cfg.prices.p1}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
+                <div><label class="text-xs dark:text-gray-400">3 Aylık ($)</label><input id="adm-p3" type="number" value="${cfg.prices.p3}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
+                <div><label class="text-xs dark:text-gray-400">1 Yıllık ($)</label><input id="adm-p12" type="number" value="${cfg.prices.p12}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
             </div>
-        `;
-    } else {
-        notesHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            ${notes.map(note => `
-                <div class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 rounded-2xl shadow-lg flex flex-col">
-                    ${note.photoBase64 ? `<img src="${note.photoBase64}" alt="Note preview" class="w-full h-32 object-cover rounded-lg mb-3">` : ''}
-                    <h3 class="text-xl font-bold text-brand-text dark:text-brand-cream truncate mb-2">${note.title || '(Başlıksız)'}</h3>
-                    <p class="text-sm text-brand-text-secondary dark:text-stone-400 flex-grow mb-4 line-clamp-3">${note.body || '(İçerik yok)'}</p>
-                    <div class="flex justify-between items-center mt-auto pt-2 border-t border-brand-cream-dark dark:border-stone-700">
-                        <span class="text-xs text-brand-text-secondary dark:text-stone-500">${timeAgo(note.createdAt_ms)}</span>
-                        <div>
-                            <button data-id="${note.id}" class="edit-note-btn p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md">
-                                <i data-lucide="edit-3" class="h-4 w-4"></i>
-                            </button>
-                            <button data-id="${note.id}" data-title="${note.title || '(Başlıksız)'}" class="delete-note-btn p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-md">
-                                <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>`;
-    }
-
-    root.innerHTML = `
-        <div class="min-h-screen p-4 md:p-8 font-inter">
-            <!-- Header -->
-            <header class="relative z-10 flex flex-col md:flex-row justify-between items-center mb-8 bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight flex items-center space-x-3">
-                    <i data-lucide="notebook-tabs" class="h-8 w-8"></i>
-                    <span>${translate('notesListTitle')}</span>
-                </h1>
-                <div class="flex items-center space-x-3 mt-4 md:mt-0">
-                    <button id="add-new-note-btn" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-150 flex items-center space-x-2">
-                        <i data-lucide="plus" class="h-5 w-5"></i>
-                        <span>${translate('addNewNote')}</span>
-                    </button>
-                    <button id="back-to-dashboard-btn" class="px-4 py-2 bg-brand-green text-white font-semibold rounded-lg shadow-md hover:bg-brand-green-dark transition duration-150 flex items-center space-x-2">
-                        <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
-                        <span>${translate('backToDashboard')}</span>
-                    </button>
-                </div>
-            </header>
-            
-            ${notesHtml}
+            <button onclick="savePrices()" class="mt-3 bg-yellow-500 text-white px-4 py-2 rounded shadow hover:bg-yellow-600">${translate('adminPriceSave')}</button>
         </div>
-    `;
-    
-    lucide.createIcons();
-    
-    // Buton eventleri
-    document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
-        currentView = 'dashboard';
-        render();
-    });
-
-    document.getElementById('add-new-note-btn').addEventListener('click', () => {
-        currentNoteIdToEdit = null; // Yeni not
-        currentView = 'noteEditor';
-        render();
-    });
-
-    document.querySelectorAll('.edit-note-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            currentNoteIdToEdit = e.currentTarget.getAttribute('data-id');
-            currentView = 'noteEditor';
-            render();
-        });
-    });
-
-    document.querySelectorAll('.delete-note-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            const title = e.currentTarget.getAttribute('data-title');
-            
-            showCustomModal(
-                translate('deleteNoteTitle'),
-                translate('deleteNoteBody', {title: title}),
-                true,
-                () => { // OnConfirm
-                    const allNotes = loadAllNotes();
-                    const filteredNotes = allNotes.filter(note => note.id !== id);
-                    saveAllNotes(filteredNotes);
-                    renderNotesList(); // Listeyi yenile
-                }
-            );
-        });
-    });
-}
-
-/**
- * Not Düzenleyiciyi (Eski Not Paneli) render eder
- * @param {string | null} noteId Düzenlenecek notun ID'si veya yeni not için null
- */
-function renderNoteEditor(noteId) {
-    const allNotes = loadAllNotes();
-    const note = noteId ? allNotes.find(n => n.id === noteId) : null;
-    
-    // Varsayılan boş not objesi (yeni not için)
-    const currentNote = note || {
-        id: null,
-        title: '',
-        body: '',
-        photoBase64: null,
-        files: [], // { name, size, type }
-        createdAt_ms: Date.now()
-    };
-    
-    // Arka plan
-    document.body.classList.add('animated-bg');
-
-    root.innerHTML = `
-        <div class="min-h-screen p-4 md:p-8 font-inter">
-            <!-- Header -->
-            <header class="relative z-10 flex flex-col md:flex-row justify-between items-center mb-8 bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight flex items-center space-x-3">
-                    <i data-lucide="notebook-pen" class="h-8 w-8"></i>
-                    <span>${noteId ? translate('editNote') : translate('addNewNote')}</span>
-                </h1>
-                <div class="flex items-center space-x-3 mt-4 md:mt-0">
-                    <button id="back-to-notes-list" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 transition duration-150 flex items-center space-x-2">
-                        <i data-lucide="arrow-left" class="h-5 w-5"></i>
-                        <span>${translate('backToNotes')}</span>
-                    </button>
-                    <button id="save-note-btn" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-150 flex items-center space-x-2">
-                        <i data-lucide="save" class="h-5 w-5"></i>
-                        <span>${translate('saveNote')}</span>
-                    </button>
-                </div>
-            </header>
-
-            <p id="note-save-status" class="hidden p-3 rounded-lg text-sm mb-4 text-center"></p>
-
-            <!-- Panel: Not Alanı -->
-            <section class="bg-brand-cream/80 dark:bg-stone-800/80 backdrop-blur-lg border border-brand-cream-dark/50 dark:border-stone-700/50 p-4 md:p-6 rounded-2xl shadow-xl">
-                <div class="space-y-6">
-                    <div>
-                        <label for="note-title" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300">${translate('notesPlaceholderTitle')}</label>
-                        <input type="text" id="note-title" value="${currentNote.title}" placeholder="${translate('notesPlaceholderTitle')}" class="mt-1 w-full text-lg font-semibold border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition duration-150">
-                    </div>
-
-                    <!-- Fotoğraf Alanı (GERÇEK) -->
-                    <div>
-                        <label class="text-sm font-medium text-brand-text-secondary dark:text-stone-300">${translate('notesPhotoPlaceholder')}</label>
-                        ${currentNote.photoBase64 ? `
-                            <img src="${currentNote.photoBase64}" id="note-image-preview" alt="Note photo" class="mt-2 w-full max-w-sm h-auto object-cover rounded-lg">
-                        ` : `
-                            <img src="" id="note-image-preview" alt="Note photo" class="hidden mt-2 w-full max-w-sm h-auto object-cover rounded-lg">
-                        `}
-                        <input type="file" id="note-photo-input" accept="image/*" class="mt-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900">
-                    </div>
-
-                    <!-- Metin Alanı -->
-                    <div>
-                        <label for="note-body" class="text-sm font-medium text-brand-text-secondary dark:text-stone-300">${translate('notesPlaceholderBody')}</label>
-                        <textarea id="note-body" rows="10" class="mt-1 w-full border border-brand-cream-dark dark:border-stone-600 bg-white dark:bg-stone-700 dark:text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition duration-150" placeholder="${translate('notesPlaceholderBody')}">${currentNote.body}</textarea>
-                    </div>
-
-                    <!-- Dosya Alanı (GERÇEK - Metadata) -->
-                    <div>
-                        <label class="text-sm font-medium text-brand-text-secondary dark:text-stone-300">${translate('notesFilesPlaceholder')}</label>
-                        <input type="file" id="note-files-input" multiple class="mt-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 dark:file:bg-blue-900/50 dark:file:text-blue-300 dark:hover:file:bg-blue-900">
-                        <div id="note-files-list" class="mt-2 space-y-1 text-sm text-brand-text-secondary dark:text-stone-400">
-                            ${currentNote.files.length > 0 ? `<strong>${translate('attachedFiles')}</strong>` : ''}
-                            ${currentNote.files.map(f => `<p><i data-lucide="file" class="h-4 w-4 inline-block mr-1"></i> ${f.name} (${Math.round(f.size / 1024)} KB)</p>`).join('')}
-                        </div>
-                    </div>
-                    
-                </div>
-            </section>
+       
+        <div class="bg-white dark:bg-stone-800 rounded shadow overflow-x-auto border dark:border-stone-700">
+            <table class="w-full text-left">
+                <thead class="bg-gray-100 dark:bg-stone-700 text-gray-600 dark:text-gray-300"><tr><th class="p-3">Email</th><th class="p-3">Durum</th><th class="p-3">Yetki</th><th class="p-3">İşlem</th></tr></thead>
+                <tbody class="divide-y dark:divide-stone-600">
+                    ${allUsers.map(u => `
+                        <tr class="dark:hover:bg-stone-700 hover:bg-gray-50">
+                            <td class="p-3 dark:text-white">${u.email}</td>
+                            <td class="p-3">${u.isBanned ? '<span class="text-red-500 font-bold">Yasaklı</span>' : '<span class="text-green-500 font-bold">Aktif</span>'}</td>
+                            <td class="p-3 dark:text-white">
+                                ${u.isAdmin ? '<span class="text-blue-500 font-bold">Yönetici</span>' : (u.subscription === 'diamond' ? '<span class="text-yellow-500 font-bold">Elmas</span>' : 'Kullanıcı')}
+                            </td>
+                            <td class="p-3 space-x-2">
+                                <button onclick="admAct('${u.email}','ban')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 dark:text-white">Ban</button>
+                                <button onclick="admAct('${u.email}','sub')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 text-yellow-600 font-bold">Elmas</button>
+                                <button onclick="admAct('${u.email}','admin')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 text-blue-600 font-bold">${u.isAdmin ? translate('actionRemoveAdmin') : translate('actionMakeAdmin')}</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
-    `;
-
-    lucide.createIcons();
+    </div>`;
     
-    // Not listesine geri dön
-    document.getElementById('back-to-notes-list').addEventListener('click', () => {
-        currentView = 'notesList';
+    window.savePrices = () => {
+        cfg.prices.p1 = document.getElementById('adm-p1').value;
+        cfg.prices.p3 = document.getElementById('adm-p3').value;
+        cfg.prices.p12 = document.getElementById('adm-p12').value;
+        saveConfig(cfg);
+        showCustomModal('Başarılı', translate('adminPriceSaved'), false);
+    };
+
+    window.admAct = (email, type) => {
+        if(type === 'ban') users[email].isBanned = !users[email].isBanned;
+        if(type === 'sub') users[email].subscription = users[email].subscription === 'diamond' ? 'none' : 'diamond';
+        if(type === 'admin') {
+             if(!users[email].isAdmin) {
+                 // Admin yapma onayı
+                 if(!confirm(translate('confirmMakeAdmin'))) return;
+                 users[email].isAdmin = true;
+                 users[email].subscription = 'diamond'; // Adminler otomatik elmas olur
+             } else {
+                 if(!confirm(translate('confirmRemoveAdmin'))) return;
+                 users[email].isAdmin = false;
+             }
+        }
+        saveAllUsers(users);
         render();
-    });
-
-    // Fotoğraf seçildiğinde
-    const photoInput = document.getElementById('note-photo-input');
-    const photoPreview = document.getElementById('note-image-preview');
-    photoInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                currentNote.photoBase64 = e.target.result;
-                photoPreview.src = e.target.result;
-                photoPreview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Dosyalar seçildiğinde
-    const filesInput = document.getElementById('note-files-input');
-    filesInput.addEventListener('change', (event) => {
-        const files = Array.from(event.target.files);
-        currentNote.files = files.map(f => ({ name: f.name, size: f.size, type: f.type }));
-        
-        // Dosya listesini güncelle
-        const fileListContainer = document.getElementById('note-files-list');
-        fileListContainer.innerHTML = `
-            <strong>${translate('attachedFiles')}</strong>
-            ${currentNote.files.map(f => `<p><i data-lucide="file" class="h-4 w-4 inline-block mr-1"></i> ${f.name} (${Math.round(f.size / 1024)} KB)</p>`).join('')}
-        `;
-        lucide.createIcons();
-    });
-
-    // Notu kaydet
-    document.getElementById('save-note-btn').addEventListener('click', () => {
-        const allNotes = loadAllNotes();
-        
-        // Formdan verileri al
-        currentNote.title = document.getElementById('note-title').value;
-        currentNote.body = document.getElementById('note-body').value;
-        // photoBase64 ve files zaten event listenerlarda güncellendi.
-        
-        if (currentNote.id) {
-            // Varolan notu güncelle
-            const index = allNotes.findIndex(n => n.id === currentNote.id);
-            if (index !== -1) {
-                allNotes[index] = { ...allNotes[index], ...currentNote, updatedAt_ms: Date.now() };
-            }
-        } else {
-            // Yeni not ekle
-            currentNote.id = generateId();
-            currentNote.createdAt_ms = Date.now();
-            allNotes.push(currentNote);
-        }
-        
-        saveAllNotes(allNotes);
-
-        // Başarı mesajı ve yönlendirme
-        const status = document.getElementById('note-save-status');
-        status.textContent = translate('noteSavedSuccess');
-        status.className = 'p-3 rounded-lg text-sm mb-4 text-center bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200';
-        setTimeout(() => { 
-            currentView = 'notesList';
-            render();
-        }, 1000);
-    });
-}
-
-
-/* ---------- Dashboard Logic (per-user store) ---------- */
-
-// YENİ: Müşteri Siparişi Kaydetme
-function saveCustomerOrder() {
-    const ordersKey = 'customer_orders_' + encodeURIComponent(currentUser.toLowerCase());
-    let orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
-    
-    // Form verilerini al
-    const name = document.getElementById('customerName').value;
-    const request = document.getElementById('customerRequest').value;
-    const quantity = parseInt(document.getElementById('customerQuantity').value, 10) || 0;
-    const reason = document.getElementById('customerReason').value;
-    const note = document.getElementById('customerNote').value;
-
-    if (!name || !request || quantity <= 0) {
-        showError(translate('Lütfen Müşteri Adı, İstek ve Adet girin.')); // TODO: i18n
-        return;
-    }
-    
-    const newOrder = {
-        id: generateId(),
-        createdAt_ms: Date.now(),
-        name,
-        request,
-        quantity,
-        reason,
-        note
     };
-    
-    orders.push(newOrder);
-    localStorage.setItem(ordersKey, JSON.stringify(orders));
-    
-    // Formu temizle
-    document.getElementById('add-customer-order-form').reset();
-    
-    // Başarı mesajı
-    showSuccess(translate('orderSavedSuccess'));
-    
-    // Bugünün siparişleri tablosunu yenile
-    renderCustomerOrdersTable();
 }
 
-// YENİ: Bugünün Müşteri Siparişleri Tablosunu Çiz
-function renderCustomerOrdersTable() {
-    const tableArea = document.getElementById('customer-orders-table-area');
-    if (!tableArea) return; // Panel görünür değilse çık
-    
-    const ordersKey = 'customer_orders_' + encodeURIComponent(currentUser.toLowerCase());
-    const allOrders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
-    
-    const todayKey = getTodayKey(Date.now());
-    const todaysOrders = allOrders.filter(order => getTodayKey(order.createdAt_ms) === todayKey).reverse();
-
-    if (todaysOrders.length === 0) {
-        tableArea.innerHTML = `<div class="text-center py-4 text-brand-text-secondary dark:text-stone-400"><p>${translate('noRecordsFound')}</p></div>`;
-        return;
-    }
-
-    const rows = todaysOrders.map(item => `
-        <tr class="hover:bg-brand-cream-dark/20 dark:hover:bg-stone-700/50 transition duration-150">
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text dark:text-brand-cream font-medium">${item.name}</td>
-          <td class="px-6 py-4 text-sm text-brand-text dark:text-brand-cream">${item.request}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text dark:text-brand-cream font-mono">${item.quantity}</td>
-          <td class="px-6 py-4 text-right text-sm font-medium">
-            <button data-id="${item.id}" class="delete-order-btn text-red-600 hover:text-red-800 dark:hover:text-red-400 font-semibold p-1 rounded-md">${translate('delete')}</button>
-          </td>
-        </tr>
-    `).join('');
-
-    tableArea.innerHTML = `
-      <div class="rounded-lg border border-brand-cream-dark dark:border-stone-700 overflow-hidden">
-        <table class="min-w-full divide-y divide-brand-cream-dark dark:divide-stone-700">
-          <thead class="bg-brand-cream-dark/30 dark:bg-stone-700/50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colCustomerName')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colCustomerRequest')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colCustomerQuantity')}</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colActions')}</th>
-            </tr>
-          </thead>
-          <tbody class="bg-brand-cream/50 dark:bg-stone-800/50 divide-y divide-brand-cream-dark dark:divide-stone-700">
-            ${rows}
-          </tbody>
-        </table>
-      </div>
-    `;
-
-    // Silme butonları
-    tableArea.querySelectorAll('.delete-order-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            showCustomModal(translate('deleteOrderTitle'), translate('deleteOrderBody'), true, 
-                () => {
-                    let orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
-                    orders = orders.filter(o => o.id !== id);
-                    localStorage.setItem(ordersKey, JSON.stringify(orders));
-                    renderCustomerOrdersTable(); // Tabloyu yenile
-                }
-            );
-        });
-    });
-}
-
-
-function initDashboardForUser(email) {
-  const key = safeKeyFromEmail(email);
-  let currentDataView = 'daily'; // YENİ: Filtre durumu
-  
-  const loadData = () => {
-    return JSON.parse(localStorage.getItem(key) || '[]').sort((a,b) => (a.createdAt_ms || 0) - (b.createdAt_ms || 0));
-  };
-
-  const saveData = (arr) => {
-    localStorage.setItem(key, JSON.stringify(arr));
-  };
-
-  let data = loadData();
-  const users = loadAllUsers();
-  const userData = users[currentUser] || {};
-  const userSub = userData.subscription || 'none';
-  const isAdminUser = userData.isAdmin || false;
-
-  const chartArea = document.getElementById('chart-area');
-  let chart = null;
-
-  const aggregateChartData = () => {
-    const totalDm = data.reduce((s,i) => s + (Number(i.dmCount) || 0), 0);
-    const totalAdSpend = data.reduce((s,i) => s + (Number(i.adSpend) || 0), 0);
-    const totalSales = data.reduce((s,i) => s + (Number(i.salesCount) || 0), 0);
-    const totalRevenue = data.reduce((s,i) => s + (Number(i.revenue) || 0), 0);
-    const netProfit = totalRevenue - totalAdSpend;
-    return [
-      { title: translate('chartLabelDM'), value: totalDm, type: 'count' },
-      { title: translate('chartLabelAdSpend'), value: totalAdSpend, type: 'currency_negative' },
-      { title: translate('chartLabelSales'), value: totalSales, type: 'count' },
-      { title: translate('chartLabelRevenue'), value: totalRevenue, type: 'currency_positive' },
-      { title: translate('chartLabelNetProfit'), value: netProfit, type: 'currency_net' },
-    ].filter(d => d.value !== 0);
-  };
-
-  const renderChart = () => {
-    const chartData = aggregateChartData();
-    const chartCanvas = document.getElementById('metric-chart'); 
-    
-    if (!chartCanvas) { 
-        chartArea.innerHTML = '<canvas id="metric-chart" class="p-2 w-full h-full"></canvas>';
-    }
-    
-    if (chart) { chart.destroy(); chart = null; }
-
-    if (chartData.length === 0 || chartData.every(d => d.value === 0)) {
-      chartArea.innerHTML = `<div class="text-center py-10 text-brand-text-secondary dark:text-stone-400 border-2 border-dashed border-brand-cream-dark dark:border-stone-700 rounded-lg">
-        <i data-lucide="bar-chart-3" class="mx-auto h-8 w-8 mb-3 text-brand-green"></i>
-        <p>${translate('noDataYet')}</p>
-      </div>`; 
-      lucide.createIcons();
-      return;
-    }
-
-    chartArea.innerHTML = '<canvas id="metric-chart" class="p-2 w-full h-full"></canvas>';
-    const ctx = document.getElementById('metric-chart').getContext('2d');
-
-    const backgroundColors = chartData.map(d => {
-      if (d.title.includes(translate('chartLabelNetProfit'))) {
-        return d.value >= 0 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
-      }
-      if (d.title.includes(translate('chartLabelAdSpend'))) return 'rgba(248, 113, 113, 0.8)';
-      if (d.title.includes(translate('chartLabelRevenue'))) return d.value >= 0 ? 'rgba(52, 211, 153, 0.8)' : 'rgba(251, 191, 36, 0.8)';
-      return 'rgba(6, 182, 212, 0.8)';
-    });
-
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: chartData.map(d => d.title),
-        datasets: [{ label: translate('chartTooltipLabel'), data: chartData.map(d => d.value), backgroundColor: backgroundColors, borderColor: 'rgb(4, 140, 165)', borderWidth: 1 }]
-      },
-      options: Object.assign({}, CHART_OPTIONS_BASE, {
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) label += ': ';
-                const value = context.parsed.y;
-                const metricType = chartData[context.dataIndex]?.type;
-                
-                if (metricType && metricType.startsWith('currency')) {
-                  const sign = value < 0 ? '-' : '';
-                  const absValue = Math.abs(value);
-                  return label + sign + '$' + absValue.toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                }
-                
-                return label + value.toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US');
-              }
-            }
-          }
-        },
-        scales: { 
-            y: { 
-                beginAtZero: false, 
-                ticks: { color: currentTheme === 'dark' ? '#EFEBE0' : '#57534E' },
-                grid: { color: currentTheme === 'dark' ? '#57534E' : '#EFEBE0' }
-            },
-            x: {
-                ticks: { color: currentTheme === 'dark' ? '#FAF8F1' : '#292524' },
-                grid: { display: false }
-            }
-        }
-      })
-    });
-  };
-
-  /**
-   * YENİ: Verileri periyoda göre gruplayan yardımcı fonksiyon
-   */
-  const aggregateDataByPeriod = (data, period) => {
-      const groups = {};
-      const getKey = period === 'week' ? getWeekKey : getMonthKey;
-      
-      data.forEach(item => {
-          const key = getKey(item.createdAt_ms);
-          if (!groups[key]) {
-              groups[key] = {
-                  id: key,
-                  dateStr: key, // Gruplanmış tarih anahtarı
-                  dmCount: 0,
-                  adSpend: 0,
-                  salesCount: 0,
-                  revenue: 0,
-                  count: 0 // Kaç kayıttan oluştuğunu say
-              };
-          }
-          groups[key].dmCount += (Number(item.dmCount) || 0);
-          groups[key].adSpend += (Number(item.adSpend) || 0);
-          groups[key].salesCount += (Number(item.salesCount) || 0);
-          groups[key].revenue += (Number(item.revenue) || 0);
-          groups[key].count++;
-      });
-      
-      // Obje'yi diziye çevir ve en yeniden eskiye sırala
-      return Object.values(groups).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
-  };
-  
-  /**
-   * YENİ: Filtre butonlarının stilini günceller
-   */
-  const updateFilterButtons = () => {
-      const views = ['daily', 'weekly', 'monthly'];
-      views.forEach(view => {
-          const btn = document.getElementById(`filter-${view}`);
-          if (btn) {
-              if (view === currentDataView) {
-                  // Aktif buton
-                  btn.className = "px-3 py-1 text-sm font-bold rounded-md bg-brand-green text-white";
-              } else {
-                  // Pasif buton
-                  btn.className = "px-3 py-1 text-sm font-medium rounded-md bg-brand-cream-dark dark:bg-stone-700 text-brand-text-secondary dark:text-stone-300 hover:bg-gray-300 dark:hover:bg-stone-600";
-              }
-          }
-      });
-  };
-
-  /**
-   * YENİ: renderTable artık filtrelemeyi destekliyor
-   */
-  const renderTable = () => {
-    const tableArea = document.getElementById('table-area');
-    const allData = loadData(); // Orijinal, sıralanmamış veri
-    let processedData = [];
-    
-    // Hangi başlığın kullanılacağını belirle
-    const dateHeader = currentDataView === 'daily' ? translate('colTimestamp') : translate('colPeriod');
-    
-    // Veriyi filtreye göre işle
-    if (currentDataView === 'daily') {
-        processedData = [...allData].reverse(); // En yeni üste
-    } else {
-        processedData = aggregateDataByPeriod(allData, currentDataView);
-    }
-
-    if (processedData.length === 0) {
-      tableArea.innerHTML = `<div class="text-center py-4 text-brand-text-secondary dark:text-stone-400"><p>${translate('noRecordsFound')}</p></div>`;
-      return;
-    }
-
-    const canDelete = (isAdminUser || userSub === 'diamond') && currentDataView === 'daily';
-
-    const rows = processedData.map(item => {
-      const dateStr = (currentDataView === 'daily' && item.createdAt_ms)
-          ? new Date(item.createdAt_ms).toLocaleString(currentLang === 'tr' ? 'tr-TR' : 'en-US')
-          : item.dateStr; // Haftalık/Aylık anahtarı
-          
-      const netProfit = (Number(item.revenue) || 0) - (Number(item.adSpend) || 0);
-      
-      return `
-        <tr class="hover:bg-brand-cream-dark/20 dark:hover:bg-stone-700/50 transition duration-150">
-          <td class="px-6 py-4 whitespace-nowrap text-xs text-brand-text-secondary dark:text-stone-400">${dateStr}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text dark:text-brand-cream font-mono">${formatCount(item.dmCount)}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text dark:text-brand-cream font-mono">${formatCurrency(item.adSpend)}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text dark:text-brand-cream font-mono">${formatCount(item.salesCount)}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-semibold ${Number(item.revenue) < 0 ? 'text-red-600' : 'text-brand-green-dark dark:text-brand-green-light'}">${formatCurrency(item.revenue)}</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-bold ${netProfit < 0 ? 'text-red-700' : 'text-brand-green dark:text-brand-green'}">${formatCurrency(netProfit)}</td>
-          
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            ${canDelete ? `
-            <button data-id="${item.id}" class="delete-btn text-red-600 hover:text-red-800 dark:hover:text-red-400 font-semibold transition duration-150 p-1 rounded-md">${translate('delete')}</button>
-            ` : ''}
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    tableArea.innerHTML = `
-      <div class="rounded-lg border border-brand-cream-dark dark:border-stone-700 overflow-hidden">
-        <table class="min-w-full divide-y divide-brand-cream-dark dark:divide-stone-700">
-          <thead class="bg-brand-cream-dark/30 dark:bg-stone-700/50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${dateHeader}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colDM')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colAdSpend')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colSales')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colRevenue')}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">${translate('colNetProfit')}</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-brand-text-secondary dark:text-stone-400 uppercase tracking-wider">
-                ${translate('colActions')}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-brand-cream/50 dark:bg-stone-800/50 divide-y divide-brand-cream-dark dark:divide-stone-700">
-            ${rows}
-          </tbody>
-        </table>
-      </div>
-    `;
-
-    if (canDelete) {
-        tableArea.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.getAttribute('data-id');
-            if (!id) return;
-            
-            showCustomModal(translate('deleteRecordTitle'), translate('deleteRecordBody'), true, 
-                () => {
-                    data = data.filter(d => d.id !== id);
-                    saveData(data);
-                    refreshUI(); // Grafiği ve tabloyu yenile
-                }
-            );
-          });
-        });
-    }
-  };
-
-  const refreshUI = () => {
-    data = loadData();
-    renderChart();
-    renderTable();
-    updateFilterButtons(); // Buton stillerini ayarla
-    renderCustomerOrdersTable(); // Müşteri tablosunu yenile
-  };
-
-  // ilk render
-  refreshUI();
-  
-  // YENİ: Filtre butonlarına event listener ekle
-  document.getElementById('filter-daily').addEventListener('click', () => {
-      currentDataView = 'daily';
-      renderTable();
-      updateFilterButtons();
-  });
-  document.getElementById('filter-weekly').addEventListener('click', () => {
-      currentDataView = 'weekly';
-      renderTable();
-      updateFilterButtons();
-  });
-  const monthlyBtn = document.getElementById('filter-monthly');
-  if (monthlyBtn) {
-      monthlyBtn.addEventListener('click', () => {
-          currentDataView = 'monthly';
-          renderTable();
-          updateFilterButtons();
-      });
-  }
-
-
-  // form submit
-  const form = document.getElementById('add-data-form');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    showError(null);
-
-    if (userSub === 'none' && data.length >= FREE_TIER_LIMIT) {
-        showError(translate('errorFreeLimitBody', {limit: FREE_TIER_LIMIT}), translate('errorFreeLimitTitle'));
-        setTimeout(renderSubscriptionModal, 100); 
-        return;
-    }
-
-    const dm = parseInt(document.getElementById('dmCount').value, 10) || 0;
-    const ad = parseFloat(document.getElementById('adSpend').value) || 0;
-    const sales = parseInt(document.getElementById('salesCount').value, 10) || 0;
-    const rev = parseFloat(document.getElementById('revenue').value) || 0;
-
-    if (dm === 0 && ad === 0 && sales === 0 && rev === 0) {
-      showError(translate('errorMinOneMetric'));
-      return;
-    }
-    if (dm < 0 || sales < 0) {
-      showError(translate('errorNegativeMetrics'));
-      return;
-    }
-
-    const newItem = {
-      id: generateId(),
-      dmCount: dm,
-      adSpend: ad,
-      salesCount: sales,
-      revenue: rev,
-      createdAt_ms: Date.now()
-    };
-
-    data.push(newItem);
-    saveData(data);
-
-    document.getElementById('add-data-form').reset();
-    refreshUI();
-  });
-}
-
-
-/* ---------- App Başlangıcı ---------- */
+// Start
 render();
 
 </script>
