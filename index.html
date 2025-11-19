@@ -6,69 +6,72 @@
   <title>GrafLife</title>
 
   <!-- Logo -->
-  <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="apple-touch-icon" href="logo.jpg">
+  <link rel="icon" type="image/jpeg" href="https://placehold.co/32x32/059669/ffffff?text=GL">
+  <link rel="apple-touch-icon" href="https://placehold.co/180x180/059669/ffffff?text=GL">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="GrafLife">
 
   <!-- Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for data visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Lucide icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <style>
+    /* Inter Font for modern look */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     .font-inter { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
     #chart-area { position: relative; }
     #metric-chart { width: 100% !important; height: 100% !important; }
 
-    /* --- Hareketli Arka Plan (HERKES İÇİN) --- */
+    /* --- Hareketli Arka Plan (Gündüz ve Gece) --- */
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
     
-    /* Gündüz Modu Arka Planı */
+    /* Gündüz Modu Arka Planı (Açık Yeşil Tonları) */
     body.animated-bg {
-      background: linear-gradient(-45deg, #FFFFFF, #F0FDF4, #DCFCE7, #BBF7D0); /* Beyaz -> Açık Yeşil Tonları */
+      background: linear-gradient(-45deg, #FFFFFF, #F0FDF4, #DCFCE7, #BBF7D0); 
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
     }
 
-    /* Gece Modu Arka Planı */
+    /* Gece Modu Arka Planı (Koyu Yeşil Tonları) */
     body.dark.animated-bg {
-      background: linear-gradient(-45deg, #0c0a09, #1c1917, #064e3b, #14532d); /* Siyah -> Koyu Yeşil Tonları */
+      background: linear-gradient(-45deg, #0c0a09, #1c1917, #064e3b, #14532d); 
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
     }
 
     /* --- YENİ: Yumuşak Geçiş Animasyonu --- */
     .fade-in-up {
-        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(15px) scale(0.98); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(15px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
-
     .app-logo { height: 40px; width: auto; object-fit: contain; border-radius: 8px; }
   </style>
   
   <script>
+    // Tailwind Konfigürasyonu
     tailwind.config = {
       darkMode: 'class', 
       theme: {
         extend: {
           colors: {
-            'brand-cream': '#FFFFFF',        
-            'brand-cream-dark': '#F3F4F6', 
-            'brand-green': '#059669',      
-            'brand-green-dark': '#047857', 
+            'brand-cream': '#FFFFFF', 
+            'brand-cream-dark': '#F3F4F6',
+            'brand-green': '#059669', 
+            'brand-green-dark': '#047857',
             'brand-green-light': '#34D399',
-            'brand-text': '#292524',      
-            'brand-text-secondary': '#57534E', 
+            'brand-text': '#292524', 
+            'brand-text-secondary': '#57534E',
           }
         }
       }
@@ -81,25 +84,35 @@
 
 <div id="app-root"></div>
 
-<!-- Genel Modal -->
+<!-- Genel Modal Yapısı (Ortak Kullanım: Onay, Bilgi, Hata) -->
 <div id="custom-modal-backdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 transition-opacity duration-300">
-    <div id="custom-modal" class="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-stone-700">
-        <h3 id="modal-title" class="text-2xl font-bold mb-4 text-brand-text dark:text-white"></h3>
-        <div id="modal-content" class="text-brand-text-secondary dark:text-stone-300 mb-6 break-words"></div>
-        <div id="modal-actions" class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0">
-            <button id="modal-cancel-btn" class="px-5 py-2.5 bg-gray-200 dark:bg-stone-700 text-gray-800 dark:text-white font-medium rounded-lg hover:bg-gray-300 transition">İptal</button>
-            <button id="modal-confirm-btn" class="px-5 py-2.5 bg-brand-green text-white font-medium rounded-lg hover:bg-brand-green-dark transition shadow-lg shadow-green-500/30">Onayla</button>
-        </div>
+  <div id="custom-modal" class="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl p-6 w-full max-w-3xl transform transition-all duration-300 scale-95 opacity-0 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-stone-700">
+    <!-- Kapatma (X) Butonu -->
+    <button id="modal-close-x" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition p-1 rounded-full hover:bg-gray-100 dark:hover:bg-stone-700 z-50">
+        <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+
+    <h3 id="modal-title" class="text-2xl font-bold mb-4 text-brand-text dark:text-white pr-8"></h3>
+    <div id="modal-content" class="text-brand-text-secondary dark:text-stone-300 mb-6 break-words"></div>
+    <div id="modal-actions" class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0">
+      <button id="modal-cancel-btn" class="px-5 py-2.5 bg-gray-200 dark:bg-stone-700 text-gray-800 dark:text-white font-medium rounded-lg hover:bg-gray-300 transition">İptal</button>
+      <button id="modal-confirm-btn" class="px-5 py-2.5 bg-brand-green text-white font-medium rounded-lg hover:bg-brand-green-dark transition shadow-lg shadow-green-500/30">Onayla</button>
     </div>
+  </div>
 </div>
 
 <script>
+/* --- Globals --- */
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
 /* --- Sabitler --- */
 const CHART_OPTIONS_BASE = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
 const ADMIN_EMAIL = 'elaymemmedli27@gmail.com';
 const ADMIN_PASSWORD = 'Elsever1975';
 const BANNED_EMAIL_EXAMPLE = 'akanak@gmail.com'; 
 const FREE_TIER_LIMIT = 15; 
+const REGISTRATION_CODE = 'BAYBAY100BEN';
+const WHATSAPP_NUMBER = '994707841414';
 
 /* --- Dil Ayarları --- */
 let currentLang = localStorage.getItem('lang') || 'tr';
@@ -107,11 +120,13 @@ document.getElementById('html-tag').lang = currentLang;
 
 const i18n = {
   tr: {
-    "loginTitle": "GrafLife'a Hoş Geldiniz",
+    "loginTitle": "GrafLife Giriş",
     "loginButton": "Giriş Yap",
     "registerButton": "Kayıt Ol ve Başla",
-    "registerNow": "Kayıt Ol",
-    "noAccount": "Hesabın yok mu?",
+    "registerNow": "YENİ ÜYE KAYDI OLUŞTUR",
+    "enterRegCode": "Kayıt Olmak İçin Erişim Kodunu Giriniz:",
+    "wrongCode": "Hatalı Erişim Kodu!",
+    "regContactMsg": "Hesap açtırmak için lütfen WhatsApp hattımız üzerinden iletişime geçiniz. Ekibimiz sizin için kayıt oluşturacaktır.",
     "emailPlaceholder": "Email Adresiniz",
     "passwordPlaceholder": "Şifreniz",
     "termsLabel": "Kullanım Şartlarını ve Kuralları kabul ediyorum.",
@@ -120,6 +135,9 @@ const i18n = {
     "rulesContent": "1. İzinsiz veri kopyalamak yasaktır.<br>2. Sistem güvenliğini tehdit etmek yasaktır.<br>3. Sahte bilgilerle işlem yapmak yasaktır.<br>4. Hesabınızın güvenliğinden siz sorumlusunuz.",
     "fakeMailWarningTitle": "SAHTE MAIL UYARISI",
     "fakeMailWarningBody": "Geçersiz mailler (ör: ksjdjal@gmail.com) yasaklanacaktır.",
+    "errorMailInUse": "Bu e-posta adresi zaten kayıtlı.",
+    "errorWrongCreds": "E-posta veya şifre hatalı.",
+    "errorBanned": "Hesabınız askıya alınmıştır.",
     "dashboardTitle": "GrafLife",
     "dailyEntryTitle": "Veri Girişi",
     "dmCountLabel": "DM Sayısı",
@@ -129,6 +147,7 @@ const i18n = {
     "saveMetricsButton": "Kaydet",
     "orders": "Siparişler",
     "notes": "Notlarım",
+    "about": "Hakkında",
     "managementPanel": "Yönetim",
     "upgradeSubscription": "Abonelik",
     "visualizationTitle": "Grafik",
@@ -141,7 +160,10 @@ const i18n = {
     "colNetProfit": "Kâr",
     "colActions": "İşlem",
     "delete": "Sil",
-    "subModalTitle": "Abonelik Paketleri",
+    "subModalTitle": "Abonelik Paketleri ve Avantajlar",
+    "subBenefitsTitle": "Neden Abone Olmalısınız?",
+    "subBenefitsList": "<li>✅ <strong>Sınırsız</strong> veri kaydı</li><li>✅ <strong>Sipariş ve Müşteri</strong> takibi</li><li>✅ <strong>Dosya/Resim</strong> yükleme</li>",
+    "freePlanList": "<li>❌ Maksimum 15 Veri Kaydı</li><li>❌ Sipariş/Müşteri Modülü Yok</li><li>❌ Dosya Yükleme Yok</li>",
     "subPrice1": "1 Aylık: ${price}",
     "subPrice3": "3 Aylık: ${price}",
     "subPrice12": "1 Yıllık: ${price}",
@@ -166,7 +188,7 @@ const i18n = {
     "alertExpired": "Süresi Dolan Hatırlatıcılar Var!",
     "alertExpiredBody": "Aşağıdaki kayıtların süresi doldu:",
     "extendTime": "Süreyi Uzat",
-    "dismiss": "Tamam",
+    "dismiss": "Kapat",
     "viewCredentials": "Hesap Bilgileri",
     "accountSwitch": "Hesap Ekle & Hızlı Geçiş",
     "logout": "Çıkış Yap",
@@ -197,12 +219,20 @@ const i18n = {
     "actionRemoveAdmin": "Yöneticiliği Al",
     "confirmMakeAdmin": "Bu kullanıcıya TAM YÖNETİCİ yetkisi vermek istediğinize emin misiniz?",
     "confirmRemoveAdmin": "Bu kullanıcının yönetici yetkisini almak istediğinize emin misiniz?",
+    "close": "Kapat",
+    "welcomeTitle": "GrafLife'a Hoş Geldiniz!",
+    "welcomeBody": "<p>GrafLife, iş süreçlerinizi, gelir-gider dengenizi ve siparişlerinizi tek bir yerden kolayca yönetmenizi sağlayan güçlü bir araçtır.</p><br><p>Verilerinizi güvenle saklayın, grafiklerle analiz edin ve işinizi büyütün.</p>",
+    "contactFooter": "Hata, Öneri, İstek ve Şikayetleriniz için tıklayın",
+    "waContact": "WhatsApp İletişim",
   },
   en: {
-    "loginTitle": "Welcome to GrafLife",
+    "loginTitle": "GrafLife Login",
     "loginButton": "Login",
     "registerButton": "Register",
-    "registerNow": "Register",
+    "registerNow": "CREATE NEW ACCOUNT",
+    "enterRegCode": "Enter Access Code to Register:",
+    "wrongCode": "Invalid Access Code!",
+    "regContactMsg": "Please contact our WhatsApp line to create an account. Our team will register you.",
     "noAccount": "No account?",
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
@@ -212,6 +242,9 @@ const i18n = {
     "rulesContent": "1. No copying.<br>2. No security threats.<br>3. No fake data.<br>4. Account security is yours.",
     "fakeMailWarningTitle": "FAKE MAIL WARNING",
     "fakeMailWarningBody": "Invalid emails will be banned.",
+    "errorMailInUse": "This email is already registered.",
+    "errorWrongCreds": "Wrong email or password.",
+    "errorBanned": "Your account is suspended.",
     "dashboardTitle": "GrafLife",
     "dailyEntryTitle": "Data Entry",
     "dmCountLabel": "DM Count",
@@ -221,6 +254,7 @@ const i18n = {
     "saveMetricsButton": "Save",
     "orders": "Orders",
     "notes": "Notes",
+    "about": "About",
     "managementPanel": "Admin",
     "upgradeSubscription": "Upgrade",
     "visualizationTitle": "Chart",
@@ -233,7 +267,10 @@ const i18n = {
     "colNetProfit": "Profit",
     "colActions": "Action",
     "delete": "Del",
-    "subModalTitle": "Subscription Plans",
+    "subModalTitle": "Subscription Plans & Benefits",
+    "subBenefitsTitle": "Why Subscribe?",
+    "subBenefitsList": "<li>✅ <strong>Unlimited</strong> data records</li><li>✅ <strong>Order & Customer</strong> tracking</li><li>✅ <strong>File/Image</strong> uploads</li>",
+    "freePlanList": "<li>❌ Max 15 Data Records</li><li>❌ No Order/Customer Module</li><li>❌ No File Uploads</li>",
     "subPrice1": "1 Month: ${price}",
     "subPrice3": "3 Months: ${price}",
     "subPrice12": "1 Year: ${price}",
@@ -258,7 +295,7 @@ const i18n = {
     "alertExpired": "Expired Reminders!",
     "alertExpiredBody": "Items due:",
     "extendTime": "Extend",
-    "dismiss": "Dismiss",
+    "dismiss": "Close",
     "viewCredentials": "Account Info",
     "accountSwitch": "Quick Switch",
     "logout": "Logout",
@@ -289,6 +326,11 @@ const i18n = {
     "actionRemoveAdmin": "Revoke Admin",
     "confirmMakeAdmin": "Are you sure you want to grant FULL ADMIN rights to this user?",
     "confirmRemoveAdmin": "Are you sure you want to revoke admin rights?",
+    "close": "Close",
+    "welcomeTitle": "Welcome to GrafLife!",
+    "welcomeBody": "<p>GrafLife is a powerful tool to manage your business metrics, revenue, and orders in one place.</p><br><p>Keep your data safe, analyze with charts, and grow your business.</p>",
+    "contactFooter": "Click here for Errors, Suggestions, Requests & Complaints",
+    "waContact": "WhatsApp Contact",
   }
 };
 
@@ -302,7 +344,6 @@ function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
   document.getElementById('html-tag').lang = currentLang;
-  // Animasyonlu geçiş
   document.body.style.opacity = '0';
   setTimeout(() => { render(); document.body.style.opacity = '1'; }, 200);
 }
@@ -323,16 +364,21 @@ function setThemeMode(mode) {
     localStorage.setItem('theme_mode', mode);
     if (mode === 'dark') document.body.classList.add('dark');
     else document.body.classList.remove('dark');
-    // İkonu güncelle
-    const btn = document.getElementById('theme-toggle-btn');
+    const btn = document.getElementById('theme-toggle-btn-login') || document.getElementById('theme-toggle-btn-dash');
     if(btn) updateThemeButton(btn);
+    
+    // DÜZELTME: Sadece kullanıcı giriş yapmışsa dashboard'u yeniden çiz
+    if (currentUser && currentView === 'dashboard') {
+        const target = document.querySelector('#app-root > .fade-in-up');
+        if (target) renderDashboard(target);
+    }
 }
 
 function updateThemeButton(btn) {
     if(currentTheme === 'light') {
-        btn.innerHTML = `<span class="flex items-center"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-500"></i> Gündüz</span>`;
+        btn.innerHTML = `<span class="flex items-center"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-500"></i> ${translate('theme')} (Gündüz)</span>`;
     } else {
-        btn.innerHTML = `<span class="flex items-center"><i data-lucide="moon" class="w-4 h-4 mr-2 text-blue-500"></i> Gece</span>`;
+        btn.innerHTML = `<span class="flex items-center"><i data-lucide="moon" class="w-4 h-4 mr-2 text-blue-500"></i> ${translate('theme')} (Gece)</span>`;
     }
     lucide.createIcons();
 }
@@ -340,7 +386,7 @@ function updateThemeButton(btn) {
 function toggleTheme() {
     setThemeMode(currentTheme === 'light' ? 'dark' : 'light');
 }
-setThemeMode(currentTheme); // Başlangıçta uygula
+setThemeMode(currentTheme);
 
 /* --- Depolama ve Yardımcılar --- */
 const safeKeyFromEmail = (email) => 'dashboard_data_' + encodeURIComponent(email.toLowerCase());
@@ -348,7 +394,6 @@ const generateId = () => Date.now().toString(36) + Math.random().toString(36).sl
 const loadAllUsers = () => JSON.parse(localStorage.getItem('users_extended') || '{}');
 const saveAllUsers = (users) => localStorage.setItem('users_extended', JSON.stringify(users));
 
-// Hızlı Giriş Depolama
 const loadQuickLoginAccounts = () => JSON.parse(localStorage.getItem('quick_login_accounts') || '[]');
 const saveQuickLoginAccounts = (arr) => localStorage.setItem('quick_login_accounts', JSON.stringify([...new Set(arr)]));
 
@@ -372,11 +417,17 @@ function initializeUsers() {
         users[ADMIN_EMAIL] = { password: ADMIN_PASSWORD, isAdmin: true, isBanned: false, createdAt_ms: now, subscription: 'diamond' };
         updated = true;
     }
+    
+    if (!users[BANNED_EMAIL_EXAMPLE]) {
+        users[BANNED_EMAIL_EXAMPLE] = { password: 'pass', isAdmin: false, isBanned: true, createdAt_ms: now, subscription: 'none' };
+        updated = true;
+    }
+
     if (updated) saveAllUsers(users);
     return users;
 }
 
-/* --- Render Mantığı --- */
+/* --- Genel Modal Fonksiyonu --- */
 function showCustomModal(title, content, isConfirm = false, onConfirm, onCancel, options = {}) {
     const backdrop = document.getElementById('custom-modal-backdrop');
     const modal = document.getElementById('custom-modal');
@@ -387,6 +438,7 @@ function showCustomModal(title, content, isConfirm = false, onConfirm, onCancel,
     const confirmBtn = document.getElementById('modal-confirm-btn');
     const cancelBtn = document.getElementById('modal-cancel-btn');
     const modalActions = document.getElementById('modal-actions');
+    const closeX = document.getElementById('modal-close-x');
     
     confirmBtn.onclick = null; cancelBtn.onclick = null;
     
@@ -396,21 +448,22 @@ function showCustomModal(title, content, isConfirm = false, onConfirm, onCancel,
         setTimeout(() => backdrop.classList.add('hidden'), 300);
     };
     
+    cancelBtn.onclick = () => { hide(); if (onCancel) onCancel(); };
+    closeX.onclick = () => { hide(); if (onCancel) onCancel(); };
+
     if (options.hideActions) modalActions.classList.add('hidden'); else modalActions.classList.remove('hidden');
+    
     if (isConfirm) {
         confirmBtn.classList.remove('hidden');
-        confirmBtn.textContent = options.confirmText || 'Onayla';
-        cancelBtn.textContent = options.cancelText || 'İptal';
+        confirmBtn.textContent = options.confirmText || translate('confirm');
+        cancelBtn.textContent = options.cancelText || translate('cancel');
         confirmBtn.onclick = () => { hide(); if (onConfirm) onConfirm(); };
-        cancelBtn.onclick = () => { hide(); if (onCancel) onCancel(); };
     } else {
         confirmBtn.classList.add('hidden');
-        cancelBtn.textContent = 'Tamam';
-        cancelBtn.onclick = hide;
+        cancelBtn.textContent = options.cancelText || translate('dismiss');
     }
     
     backdrop.classList.remove('hidden');
-    // Animasyon
     requestAnimationFrame(() => {
         modal.classList.remove('scale-95', 'opacity-0');
         modal.classList.add('scale-100', 'opacity-100');
@@ -421,13 +474,12 @@ function render() {
     initializeUsers(); 
     setThemeMode(localStorage.getItem('theme_mode') || 'light');
     
-    // İçerik konteynerini sıfırla ve animasyon ekle
     root.innerHTML = ''; 
     const container = document.createElement('div');
     container.className = 'fade-in-up w-full';
     root.appendChild(container);
     
-    const renderTarget = container; // Render fonksiyonları buraya yazacak
+    const renderTarget = container;
 
     if (!currentUser) renderLogin(renderTarget);
     else if (currentView === 'management') renderManagementPanel(renderTarget);
@@ -438,22 +490,47 @@ function render() {
     lucide.createIcons();
 }
 
+/* --- İlk Giriş Kontrolü --- */
+function checkFirstLogin() {
+    if (!currentUser) return;
+    const key = 'has_seen_intro_' + encodeURIComponent(currentUser);
+    const hasSeen = localStorage.getItem(key);
+    
+    if (!hasSeen) {
+        showCustomModal(translate('welcomeTitle'), translate('welcomeBody'), false, null, null, { cancelText: translate('close') });
+        localStorage.setItem(key, 'true');
+    }
+}
+
 /* --- Hatırlatıcı Kontrolü --- */
 function checkReminders() {
     if (!currentUser) return;
     const notesKey = 'notes_list_' + encodeURIComponent(currentUser);
     const ordersKey = 'orders_data_' + encodeURIComponent(currentUser);
-    const notes = JSON.parse(localStorage.getItem(notesKey) || '[]');
-    const orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+    let notes = JSON.parse(localStorage.getItem(notesKey) || '[]');
+    let orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
     const now = Date.now();
     let expiredItems = [];
 
-    notes.forEach(n => { if(n.reminderTime && new Date(n.reminderTime).getTime() < now && !n.alerted) expiredItems.push({type: 'Not', ...n}); });
-    orders.forEach(o => { if(o.reminderTime && new Date(o.reminderTime).getTime() < now && !o.alerted) expiredItems.push({type: 'Sipariş', ...o}); });
+    notes.forEach(n => { 
+        if(n.reminderTime && new Date(n.reminderTime).getTime() < now && !n.alerted) {
+            expiredItems.push({type: translate('notes'), ...n});
+            n.alerted = true;
+        } 
+    });
+    orders.forEach(o => { 
+        if(o.reminderTime && new Date(o.reminderTime).getTime() < now && !o.alerted) {
+            expiredItems.push({type: translate('orders'), ...o}); 
+            o.alerted = true; 
+        } 
+    });
+
+    localStorage.setItem(notesKey, JSON.stringify(notes));
+    localStorage.setItem(ordersKey, JSON.stringify(orders));
 
     if (expiredItems.length > 0) {
-        let html = `<p class="mb-2">${translate('alertExpiredBody')}</p><ul class="list-disc pl-5 text-red-600 font-bold">`;
-        expiredItems.forEach(i => html += `<li>${i.type}: ${i.title || i.name}</li>`);
+        let html = `<p class="mb-2 dark:text-gray-300">${translate('alertExpiredBody')}</p><ul class="list-disc pl-5 text-red-600 font-bold dark:text-red-400">`;
+        expiredItems.forEach(i => html += `<li>${i.type}: ${i.title || i.name || i.req}</li>`);
         html += `</ul>`;
         showCustomModal(translate('alertExpired'), html, false);
     }
@@ -468,7 +545,9 @@ function renderAccountSwitchModal() {
     accs.forEach(email => {
         html += `
         <div class="flex items-center justify-between bg-gray-50 dark:bg-stone-700 p-3 rounded border dark:border-stone-600">
-            <button onclick="doQuickLogin('${email}')" class="text-left flex-grow font-medium dark:text-white">${email}</button>
+            <button onclick="doQuickLogin('${email}')" class="text-left flex-grow font-medium dark:text-white disabled:opacity-50" ${email === currentUser ? 'disabled' : ''}>
+                ${email} ${email === currentUser ? ' (Aktif)' : ''}
+            </button>
             <button onclick="delQuickLogin('${email}')" class="text-red-500 hover:text-red-700 ml-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>`;
     });
@@ -478,15 +557,17 @@ function renderAccountSwitchModal() {
     lucide.createIcons();
     
     window.doQuickLogin = (email) => {
+        if (email === currentUser) return;
         localStorage.setItem('current_user', email); currentUser = email; 
         document.getElementById('custom-modal-backdrop').classList.add('hidden');
         render();
     };
     window.delQuickLogin = (email) => {
-        if(confirm(translate('quickLoginDeleteBody'))) {
-            removeFromQuickLogin(email);
-            renderAccountSwitchModal();
-        }
+        showCustomModal(translate('quickLoginDeleteTitle'), translate('quickLoginDeleteBody'), true, 
+            () => { removeFromQuickLogin(email); renderAccountSwitchModal(); },
+            null,
+            { confirmText: translate('deleteFromList') }
+        );
     };
 }
 
@@ -498,37 +579,60 @@ function renderSubscriptionModal() {
     
     const modalContent = `
         <div class="space-y-4">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Free Plan -->
+                <div class="p-4 border rounded-lg bg-gray-50 dark:bg-stone-700 border-gray-200 dark:border-stone-600">
+                    <h4 class="font-bold text-lg text-gray-600 dark:text-gray-300 mb-2">Ücretsiz Plan</h4>
+                    <ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400">
+                        ${translate('freePlanList')}
+                    </ul>
+                </div>
+
+                <!-- Diamond Plan -->
+                <div class="p-4 border-2 border-brand-green rounded-lg bg-white dark:bg-stone-800 shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-brand-green text-white text-xs px-2 py-1 rounded-bl">Önerilen</div>
+                    <h4 class="font-bold text-lg text-brand-green mb-2">Elmas (Abone)</h4>
+                    <ul class="text-sm space-y-2 text-gray-700 dark:text-gray-200">
+                         ${translate('subBenefitsList')}
+                    </ul>
+                </div>
+            </div>
+            
             <div class="p-4 border rounded-lg bg-white dark:bg-stone-700 shadow-sm">
-                <h4 class="font-bold text-lg dark:text-white text-brand-green mb-2">Aylık Paketler</h4>
-                <ul class="list-disc pl-5 text-sm dark:text-gray-300 space-y-1">
-                    <li>${translate('subPrice1', {price: '$'+cfg.prices.p1})}</li>
-                    <li>${translate('subPrice3', {price: '$'+cfg.prices.p3})}</li>
-                    <li>${translate('subPrice12', {price: '$'+cfg.prices.p12})}</li>
+                <h4 class="font-bold text-md dark:text-white text-brand-text mb-2">Fiyatlar</h4>
+                <ul class="list-none space-y-2 text-sm dark:text-gray-300">
+                    <li class="bg-gray-50 dark:bg-stone-600 p-2 rounded border dark:border-stone-500">${translate('subPrice1', {price: cfg.prices.p1+'$'})}</li>
+                    <li class="bg-gray-50 dark:bg-stone-600 p-2 rounded border dark:border-stone-500">${translate('subPrice3', {price: cfg.prices.p3+'$'})}</li>
+                    <li class="bg-gray-50 dark:bg-stone-600 p-2 rounded border dark:border-stone-500">${translate('subPrice12', {price: cfg.prices.p12+'$'})}</li>
                 </ul>
-                <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">Avantajlar: Sınırsız Kayıt, Gelişmiş Notlar, Dosya Yükleme</div>
-                <a href="https://wa.me/994707841414" target="_blank" class="block mt-3 bg-green-600 text-white text-center py-2 rounded font-bold hover:bg-green-700 transition">WhatsApp ile Satın Al</a>
+                
+                <a href="https://wa.me/${WHATSAPP_NUMBER}?text=GrafLife%20Abonelik%20bilgisi%20istiyorum." target="_blank" class="block mt-4 bg-green-600 text-white text-center py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-5 h-5 mr-2"></i> WhatsApp ile Satın Al
+                </a>
             </div>
             
             ${isAdmin ? `
             <div class="p-4 border border-yellow-500 rounded-lg bg-yellow-50 dark:bg-stone-800 mt-4">
                 <h5 class="font-bold text-yellow-700 dark:text-yellow-500 mb-2">${translate('subAdminEdit')}</h5>
                 <div class="grid grid-cols-3 gap-2">
-                    <input id="p1" type="number" value="${cfg.prices.p1}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
-                    <input id="p3" type="number" value="${cfg.prices.p3}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
-                    <input id="p12" type="number" value="${cfg.prices.p12}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white">
+                    <input id="p1" type="number" min="0" value="${cfg.prices.p1}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white" placeholder="1 Ay">
+                    <input id="p3" type="number" min="0" value="${cfg.prices.p3}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white" placeholder="3 Ay">
+                    <input id="p12" type="number" min="0" value="${cfg.prices.p12}" class="p-1 border rounded text-sm dark:bg-stone-700 dark:text-white" placeholder="1 Yıl">
                 </div>
-                <button id="save-prices-btn" class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700">Fiyatları Kaydet</button>
+                <button id="save-prices-btn" class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-xs hover:bg-yellow-700">${translate('adminPriceSave')}</button>
             </div>` : ''}
         </div>
     `;
     
     showCustomModal(translate('subModalTitle'), modalContent, false, null, null, { cancelText: translate('close') });
+    lucide.createIcons();
     
     if(isAdmin) {
         document.getElementById('save-prices-btn').onclick = () => {
-            cfg.prices.p1 = document.getElementById('p1').value;
-            cfg.prices.p3 = document.getElementById('p3').value;
-            cfg.prices.p12 = document.getElementById('p12').value;
+            const newP1 = parseFloat(document.getElementById('p1').value) || 0;
+            const newP3 = parseFloat(document.getElementById('p3').value) || 0;
+            const newP12 = parseFloat(document.getElementById('p12').value) || 0;
+            cfg.prices.p1 = newP1; cfg.prices.p3 = newP3; cfg.prices.p12 = newP12;
             saveConfig(cfg);
             showCustomModal('Başarılı', translate('adminPriceSaved'), false);
         };
@@ -538,10 +642,10 @@ function renderSubscriptionModal() {
 /* --- Login Ekranı --- */
 function renderLogin(target) {
     target.innerHTML = `
-    <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="flex items-center justify-center min-h-screen p-4 relative">
         <div class="w-full max-w-md bg-white/90 dark:bg-stone-800/90 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-200 dark:border-stone-700 relative z-10">
-            <div class="flex justify-center mb-4"><img src="logo.jpg" class="h-16 w-auto rounded-xl shadow-lg" onerror="this.style.display='none'"></div>
-            <h2 class="text-3xl font-bold text-center text-brand-green dark:text-green-400 mb-6">${translate('loginTitle')}</h2>
+            <div class="flex justify-center mb-4"><img src="https://placehold.co/64x64/059669/ffffff?text=GL" class="h-16 w-auto rounded-xl shadow-lg"></div>
+            <h2 id="login-header" class="text-3xl font-bold text-center text-brand-green dark:text-green-400 mb-6">${translate('loginTitle')}</h2>
             
             <div class="mb-4 p-3 text-xs bg-gray-100 dark:bg-stone-900 dark:text-gray-300 rounded border h-24 overflow-y-auto">
                 <strong>${translate('rulesTitle')}:</strong><br>${translate('rulesContent')}
@@ -556,56 +660,76 @@ function renderLogin(target) {
                     <label for="terms-check" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">${translate('termsLabel')}</label>
                 </div>
 
-                <button type="submit" class="w-full py-3 bg-brand-green hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg">${translate('loginButton')}</button>
+                <button id="login-submit-btn" type="submit" class="w-full py-3 bg-brand-green hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg">${translate('loginButton')}</button>
             </form>
             
             <div class="flex justify-between mt-4 text-sm px-2">
-                <button id="toggle-register" class="text-green-600 font-bold hover:underline">${translate('registerNow')}</button>
                 <button id="quick-switch-btn" class="text-blue-500 font-bold hover:underline">${translate('accountSwitch')}</button>
             </div>
 
             <div class="text-center mt-6 pt-4 border-t border-gray-200 dark:border-stone-600 flex justify-center items-center space-x-4 text-sm">
-                <button onclick="setLanguage('tr')" class="${currentLang==='tr'?'font-bold text-green-600 dark:text-green-400':''}">TR</button>
-                <button onclick="setLanguage('en')" class="${currentLang==='en'?'font-bold text-green-600 dark:text-green-400':''}">EN</button>
-                <button id="theme-toggle-btn-login" class="ml-4"></button>
+                <button onclick="setLanguage('tr')" class="${currentLang==='tr'?'font-bold text-green-600 dark:text-green-400':'text-gray-500 dark:text-gray-300'}">TR</button>
+                <button onclick="setLanguage('en')" class="${currentLang==='en'?'font-bold text-green-600 dark:text-green-400':'text-gray-500 dark:text-gray-300'}">EN</button>
+                <button id="theme-toggle-btn-login" class="ml-4 text-gray-500 dark:text-gray-300"></button>
+            </div>
+            
+            <!-- Gizli Kayıt Alanı & WhatsApp -->
+            <div class="mt-6 flex flex-col items-center space-y-2">
+                <button id="secret-reg-btn" class="text-brand-green font-bold text-base mt-4 hover:underline">${translate('registerNow')}</button>
+                
+                <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" class="text-green-600 dark:text-green-400 text-sm font-bold flex items-center hover:underline">
+                    <i data-lucide="message-circle" class="w-4 h-4 mr-1"></i> ${translate('waContact')}
+                </a>
             </div>
         </div>
     </div>`;
 
     updateThemeButton(document.getElementById('theme-toggle-btn-login'));
     document.getElementById('theme-toggle-btn-login').onclick = () => { toggleTheme(); render(); };
+    lucide.createIcons();
 
     const form = document.getElementById('login-form');
     let isRegister = false;
 
-    document.getElementById('toggle-register').onclick = (e) => {
-        e.preventDefault(); isRegister = !isRegister;
-        form.querySelector('button').textContent = isRegister ? translate('registerButton') : translate('loginButton');
+    // Yeni Üye Kaydı Butonuna Tıklanınca
+    document.getElementById('secret-reg-btn').onclick = (e) => {
+        e.preventDefault();
+        // hideActions: false yaptık ve butonları gösterdik. İsteğe göre sadece X ile kapatılabilir.
+        // Ancak kullanıcı kapatma işareti de istediği için X butonu ekledik.
+        showCustomModal(translate('registerNow'), 
+            `<p class="mb-4 text-sm text-center">${translate('regContactMsg')}</p>
+             <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Yeni%20kayıt%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" class="block bg-green-600 text-white text-center py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-lg flex items-center justify-center">
+                <i data-lucide="message-circle" class="w-5 h-5 mr-2"></i> WhatsApp İle Yazın
+             </a>`, 
+            false, null, null, { cancelText: translate('close'), hideActions: false }
+        );
+        lucide.createIcons();
     };
     
     document.getElementById('quick-switch-btn').onclick = renderAccountSwitchModal;
 
     form.onsubmit = (e) => {
         e.preventDefault();
-        if (!document.getElementById('terms-check').checked) { showCustomModal('!', translate('termsError')); return; }
+        const termsCheck = document.getElementById('terms-check');
+        if (!termsCheck || !termsCheck.checked) { showCustomModal('Hata', translate('termsError')); return; }
         
         const email = document.getElementById('login-email').value.trim().toLowerCase();
         const password = document.getElementById('login-password').value;
         const users = loadAllUsers();
 
         if (isRegister) {
-            if (users[email]) return showCustomModal('!', translate('errorMailInUse'));
-            users[email] = { password, isAdmin: false, subscription: 'none', createdAt_ms: Date.now() };
+            if (users[email]) return showCustomModal('Hata', translate('errorMailInUse'));
+            users[email] = { password, isAdmin: false, isBanned: false, subscription: 'none', createdAt_ms: Date.now() };
             saveAllUsers(users);
             addToQuickLogin(email);
             localStorage.setItem('current_user', email); currentUser = email; render();
         } else {
             if (users[email] && users[email].password === password) {
-                if(users[email].isBanned) return showCustomModal('!', translate('errorBanned', {email}));
+                if(users[email].isBanned) return showCustomModal('Hata', translate('errorBanned', {email}));
                 addToQuickLogin(email);
                 localStorage.setItem('current_user', email); currentUser = email; render();
             } else {
-                showCustomModal('!', translate('errorWrongCreds'));
+                showCustomModal('Hata', translate('errorWrongCreds'));
             }
         }
     };
@@ -615,6 +739,8 @@ function renderLogin(target) {
 function renderNotesPanel(target) {
     const key = 'notes_list_' + encodeURIComponent(currentUser);
     let notes = JSON.parse(localStorage.getItem(key) || '[]');
+    const user = loadAllUsers()[currentUser] || {};
+    const isPremium = user.subscription === 'diamond' || user.isAdmin;
 
     const handleAddNote = () => {
         const title = document.getElementById('n-title').value;
@@ -622,44 +748,60 @@ function renderNotesPanel(target) {
         const date = document.getElementById('n-date').value;
         const fileInput = document.getElementById('n-file');
         
-        if(!title) return alert('Başlık gerekli');
+        if(!title) return showCustomModal('Hata', 'Başlık gerekli', false);
 
         const save = (fileData) => {
-            notes.push({ id: generateId(), title, body, reminderTime: date, file: fileData, alerted: false });
+            notes.push({ id: generateId(), title, body, reminderTime: date, file: fileData, createdAt_ms: Date.now(), alerted: false });
             localStorage.setItem(key, JSON.stringify(notes));
             renderNotesPanel(target);
         };
 
-        if(fileInput.files[0]) {
+        if(fileInput && fileInput.files[0] && isPremium) {
+            const file = fileInput.files[0];
             const reader = new FileReader();
             reader.onload = (e) => save(e.target.result);
-            reader.readAsDataURL(fileInput.files[0]);
+            reader.readAsDataURL(file);
         } else {
             save(null);
         }
     };
 
     window.delNote = (id) => {
-        notes = notes.filter(n => n.id !== id);
-        localStorage.setItem(key, JSON.stringify(notes));
-        renderNotesPanel(target);
+        showCustomModal(translate('deleteRecordTitle'), 'Bu notu silmek istediğinizden emin misiniz?', true, 
+            () => {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem(key, JSON.stringify(notes));
+                renderNotesPanel(target);
+            }
+        );
+    };
+    
+    window.viewNoteFile = (url, title) => {
+        const isImage = url.startsWith('data:image/');
+        const content = isImage ? `<img src="${url}" class="max-w-full h-auto rounded-lg mx-auto shadow-xl" alt="Note File">` : `<p class="text-red-500">Dosya formatı desteklenmiyor veya çok büyük.</p>`;
+        showCustomModal(title, content, false, null, null, { cancelText: translate('close'), hideActions: true });
     };
 
     let listHtml = notes.map(n => `
-        <div class="bg-white dark:bg-stone-700 p-4 rounded shadow mb-4 border border-gray-200 dark:border-stone-600 relative">
-            <div class="flex justify-between">
-                <h4 class="font-bold text-lg dark:text-white">${n.title}</h4>
-                <button onclick="window.delNote('${n.id}')" class="text-red-500"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+        <div class="bg-white dark:bg-stone-700 p-4 rounded-xl shadow mb-4 border border-gray-200 dark:border-stone-600 relative hover:shadow-lg transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="font-bold text-lg dark:text-white">${n.title}</h4>
+                    <div class="text-xs text-gray-400 dark:text-gray-400">${new Date(n.createdAt_ms || 0).toLocaleDateString()}</div>
+                </div>
+                <div class="flex space-x-2">
+                    ${n.file ? `<button onclick="window.viewNoteFile('${n.file}', '${n.title}')" class="text-green-600 hover:text-green-800 p-1 bg-green-100 dark:bg-stone-600 dark:text-green-400 rounded"><i data-lucide="image" class="h-4 w-4"></i></button>` : ''}
+                    <button onclick="window.delNote('${n.id}')" class="text-red-500 hover:text-red-700 p-1 bg-red-100 dark:bg-stone-600 rounded"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                </div>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1 whitespace-pre-wrap">${n.body}</p>
-            ${n.file ? `<img src="${n.file}" class="mt-3 max-h-40 rounded border">` : ''}
-            ${n.reminderTime ? `<div class="mt-2 text-xs text-blue-600 dark:text-blue-400 font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(n.reminderTime).toLocaleString()}</div>` : ''}
+            <p class="text-gray-600 dark:text-gray-300 text-sm mt-2 whitespace-pre-wrap">${n.body}</p>
+            ${n.reminderTime ? `<div class="mt-3 text-xs ${new Date(n.reminderTime).getTime() < Date.now() ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'} font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(n.reminderTime).toLocaleString()}</div>` : ''}
         </div>
     `).reverse().join('');
 
     target.innerHTML = `
         <div class="min-h-screen p-4 md:p-8 relative z-10">
-            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
+            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur sticky top-0 z-20">
                 <h1 class="text-3xl font-bold text-blue-600 flex items-center"><i data-lucide="notebook-tabs" class="mr-2"></i>${translate('notesTitle')}</h1>
                 <button id="back-dash" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium">Geri</button>
             </div>
@@ -669,16 +811,18 @@ function renderNotesPanel(target) {
                     <h3 class="font-bold mb-3 dark:text-white border-b pb-2">${translate('addNote')}</h3>
                     <input id="n-title" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('noteTitlePh')}">
                     <textarea id="n-body" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white h-32" placeholder="${translate('noteBodyPh')}"></textarea>
+                    
                     <div class="mb-2">
-                        <label class="text-xs dark:text-gray-400 block mb-1">${translate('noteFile')}</label>
-                        <input type="file" id="n-file" class="w-full text-sm dark:text-gray-300">
+                        <label class="text-xs dark:text-gray-400 block mb-1 ${!isPremium ? 'line-through' : ''}">${translate('noteFile')} ${!isPremium ? '(Premium)' : ''}</label>
+                        <input type="file" id="n-file" class="w-full text-sm dark:text-gray-300" ${!isPremium ? 'disabled' : ''}>
                     </div>
+                    
                     <label class="text-xs dark:text-gray-400 block mb-1">${translate('noteDate')}</label>
                     <input type="datetime-local" id="n-date" class="w-full mb-4 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white">
-                    <button id="add-n-btn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-bold shadow">${translate('saveNote')}</button>
+                    <button id="add-n-btn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-bold shadow transition transform hover:scale-[1.01]">${translate('saveNote')}</button>
                 </div>
                 <div class="lg:col-span-2">
-                    ${listHtml || '<p class="text-center opacity-50 dark:text-white">Henüz not yok.</p>'}
+                    ${listHtml || `<p class="text-center opacity-50 dark:text-white py-10 rounded-xl bg-white/70 dark:bg-stone-800/70">${translate('noRecordsFound')}</p>`}
                 </div>
             </div>
         </div>
@@ -697,79 +841,95 @@ function renderOrdersPanel(target) {
     const handleSave = () => {
         const name = document.getElementById('o-name').value;
         const req = document.getElementById('o-req').value;
-        const amt = document.getElementById('o-amt').value;
+        const amt = parseFloat(document.getElementById('o-amt').value) || 0;
         const note = document.getElementById('o-note').value;
+        const reason = document.getElementById('o-reason').value;
         const date = document.getElementById('o-date').value;
         
-        if(!name) return alert('İsim gerekli');
-        orders.push({ id: generateId(), name, req, amount: amt, note, reminderTime: date, createdAt: Date.now(), alerted: false });
+        if(!name || !req) return showCustomModal('Hata', 'Müşteri Adı ve İstek gerekli.', false);
+        if(amt < 0) return showCustomModal('Hata', 'Tutar negatif olamaz.', false);
+
+        orders.push({ 
+            id: generateId(), 
+            name, req, amount: amt.toFixed(2), note, reason, reminderTime: date, createdAt: Date.now(), alerted: false 
+        });
         localStorage.setItem(key, JSON.stringify(orders));
         renderOrdersPanel(target);
     };
 
     window.delOrd = (id) => {
-        orders = orders.filter(o => o.id !== id);
-        localStorage.setItem(key, JSON.stringify(orders));
-        renderOrdersPanel(target);
+        showCustomModal(translate('deleteRecordTitle'), 'Bu sipariş kaydını silmek istediğinizden emin misiniz?', true, 
+            () => {
+                orders = orders.filter(o => o.id !== id);
+                localStorage.setItem(key, JSON.stringify(orders));
+                renderOrdersPanel(target);
+            }
+        );
     };
 
     window.addToMet = (id) => {
         const order = orders.find(o => o.id === id);
         if(!order) return;
         
-        showCustomModal('Onay', translate('addToMetricsConfirm', {amount: order.amount}), true, () => {
-            const metricKey = 'dashboard_data_' + encodeURIComponent(currentUser.toLowerCase());
+        showCustomModal(translate('addToMetrics'), translate('addToMetricsConfirm', {amount: order.amount}), true, () => {
+            const metricKey = safeKeyFromEmail(currentUser);
             let metrics = JSON.parse(localStorage.getItem(metricKey) || '[]');
+            const user = loadAllUsers()[currentUser] || {};
+            if(user.subscription === 'none' && metrics.length >= FREE_TIER_LIMIT) { 
+                 showCustomModal(translate('errorFreeLimitTitle'), translate('errorFreeLimitBody', {limit: FREE_TIER_LIMIT}), false); 
+                 setTimeout(renderSubscriptionModal, 1500);
+                 return; 
+            }
             metrics.push({ 
-                id: generateId(), 
-                dmCount: 0, adSpend: 0, salesCount: 1, 
-                revenue: parseFloat(order.amount) || 0, 
-                createdAt_ms: Date.now() 
+                id: generateId(), dmCount: 0, adSpend: 0, salesCount: 1, revenue: parseFloat(order.amount) || 0, createdAt_ms: Date.now() 
             });
             localStorage.setItem(metricKey, JSON.stringify(metrics));
-            alert('Gelir olarak eklendi!');
+            showCustomModal('Başarılı', `Sipariş geliri (${order.amount}$) metriklere eklendi.`, false);
         });
     };
 
     let listHtml = orders.map(o => `
-        <div class="bg-white dark:bg-stone-700 p-4 rounded shadow mb-3 border border-purple-200 dark:border-stone-600 relative">
+        <div class="bg-white dark:bg-stone-700 p-4 rounded-xl shadow mb-4 border border-purple-200 dark:border-stone-600 relative hover:shadow-lg transition">
             <div class="flex justify-between items-start">
                 <div>
-                    <h4 class="font-bold text-lg dark:text-white">${o.name}</h4>
-                    <div class="text-xs text-gray-500">${new Date(o.createdAt).toLocaleDateString()}</div>
+                    <h4 class="font-bold text-lg dark:text-white">${o.name} - <span class="text-purple-600 dark:text-purple-400">${o.amount}$</span></h4>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">${new Date(o.createdAt).toLocaleDateString()}</div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="window.addToMet('${o.id}')" class="text-green-600 hover:text-green-800 p-1 bg-green-100 rounded" title="${translate('addToMetrics')}"><i data-lucide="bar-chart-big" class="h-5 w-5"></i></button>
-                    <button onclick="window.delOrd('${o.id}')" class="text-red-500 hover:text-red-700 p-1 bg-red-100 rounded"><i data-lucide="trash-2" class="h-5 w-5"></i></button>
+                    <button onclick="window.addToMet('${o.id}')" class="text-green-600 hover:text-green-800 p-1 bg-green-100 dark:bg-stone-600 dark:text-green-400 rounded" title="${translate('addToMetrics')}"><i data-lucide="bar-chart-big" class="h-5 w-5"></i></button>
+                    <button onclick="window.delOrd('${o.id}')" class="text-red-500 hover:text-red-700 p-1 bg-red-100 dark:bg-stone-600 rounded"><i data-lucide="trash-2" class="h-5 w-5"></i></button>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-2 mt-2 text-sm dark:text-gray-200">
                 <p><strong>İstek:</strong> ${o.req}</p>
-                <p><strong>Tutar:</strong> ${o.amount}$</p>
-                <p class="col-span-2"><strong>Not:</strong> ${o.note}</p>
-                ${o.reminderTime ? `<p class="col-span-2 text-red-500 font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(o.reminderTime).toLocaleString()}</p>` : ''}
+                <p><strong>Sebep:</strong> ${o.reason || '-'}</p>
+                <p class="col-span-2"><strong>Not:</strong> ${o.note || '-'}</p>
+                ${o.reminderTime ? `<p class="col-span-2 ${new Date(o.reminderTime).getTime() < Date.now() ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'} font-bold flex items-center"><i data-lucide="clock" class="h-3 w-3 mr-1"></i> ${new Date(o.reminderTime).toLocaleString()}</p>` : ''}
             </div>
         </div>
     `).reverse().join('');
 
     target.innerHTML = `
         <div class="min-h-screen p-4 md:p-8 relative z-10">
-            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
+            <div class="flex justify-between mb-6 items-center bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur sticky top-0 z-20">
                 <h1 class="text-3xl font-bold text-purple-600 flex items-center"><i data-lucide="shopping-cart" class="mr-2"></i>${translate('ordersTitle')}</h1>
                 <button id="back-dash" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium">Geri</button>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-white/90 dark:bg-stone-800/90 p-5 rounded-xl border dark:border-stone-700 shadow-lg h-fit backdrop-blur">
-                    <input id="o-name" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderName')}">
-                    <input id="o-req" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderReq')}">
-                    <input id="o-amt" type="number" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderAmt')}">
+                    <h3 class="font-bold mb-3 dark:text-white border-b pb-2">${translate('saveOrder')}</h3>
+                    <input id="o-name" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderName')}" required>
+                    <input id="o-req" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderReq')}" required>
+                    <input id="o-amt" type="number" step="0.01" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderAmt')}" value="0">
                     <textarea id="o-note" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderNote')}"></textarea>
+                    <input id="o-reason" class="w-full mb-2 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white" placeholder="${translate('orderReason')}" >
                     <label class="text-xs dark:text-gray-400 block mb-1">${translate('orderDate')}</label>
                     <input type="datetime-local" id="o-date" class="w-full mb-4 p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white">
-                    <button id="add-o-btn" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 font-bold shadow">${translate('saveOrder')}</button>
+                    <button id="add-o-btn" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 font-bold shadow transition transform hover:scale-[1.01]">${translate('saveOrder')}</button>
                 </div>
                 <div class="lg:col-span-2">
-                    ${listHtml || '<p class="text-center opacity-50 dark:text-white">Sipariş yok.</p>'}
+                    ${listHtml || `<p class="text-center opacity-50 dark:text-white py-10 rounded-xl bg-white/70 dark:bg-stone-800/70">${translate('noRecordsFound')}</p>`}
                 </div>
             </div>
         </div>
@@ -780,46 +940,44 @@ function renderOrdersPanel(target) {
     document.getElementById('add-o-btn').onclick = handleSave;
 }
 
+
 /* --- Ana Dashboard --- */
+let chartInstance = null;
 function renderDashboard(target) {
     const users = loadAllUsers();
     const u = users[currentUser] || {};
     const sub = u.subscription || 'none';
     const isAdmin = u.isAdmin;
+    const isPremium = sub === 'diamond' || isAdmin;
 
     target.innerHTML = `
-        <div class="min-h-screen p-4 md:p-8 relative z-10">
-            <!-- Başlık: z-50 ile her şeyin üstünde -->
+        <div class="min-h-screen p-4 md:p-8 relative z-10 flex flex-col">
+            <!-- Başlık/Menü -->
             <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white/80 dark:bg-stone-800/80 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700 relative z-50">
                 <div class="flex items-center space-x-3">
-                    <img src="logo.jpg" class="h-10 w-auto rounded" onerror="this.style.display='none'">
+                    <img src="https://placehold.co/40x40/059669/ffffff?text=GL" class="h-10 w-auto rounded-lg shadow-sm">
                     <h1 class="text-3xl font-extrabold text-green-800 dark:text-green-400 tracking-tight">${translate('dashboardTitle')}</h1>
                 </div>
                 <div class="flex flex-wrap justify-center gap-3 mt-4 md:mt-0 items-center">
-                    ${(sub === 'diamond' || isAdmin) ? `
+                    ${isPremium ? `
                         <button onclick="currentView='orders';render()" class="bg-purple-500 text-white px-3 py-2 rounded-lg shadow hover:bg-purple-600 flex items-center transition"><i data-lucide="shopping-cart" class="w-4 h-4 mr-2"></i> ${translate('orders')}</button>
                         <button onclick="currentView='notes';render()" class="bg-blue-500 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-600 flex items-center transition"><i data-lucide="notebook-tabs" class="w-4 h-4 mr-2"></i> ${translate('notes')}</button>
                     ` : ''}
+                    <button onclick="showAboutModal()" class="bg-gray-500 text-white px-3 py-2 rounded-lg shadow hover:bg-gray-600 flex items-center transition"><i data-lucide="info" class="w-4 h-4 mr-2"></i> ${translate('about')}</button>
+                    ${isAdmin ? `<button onclick="currentView='management';render()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition"><i data-lucide="shield" class="w-4 h-4 mr-2"></i> ${translate('managementPanel')}</button>` : ''}
+                    ${!isPremium ? `<button onclick="renderSubscriptionModal()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition animate-pulse"><i data-lucide="gem" class="w-4 h-4 mr-2"></i> ${translate('upgradeSubscription')}</button>` : ''}
                     
-                    ${isAdmin ? `<button onclick="currentView='management';render()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition"><i data-lucide="shield" class="w-4 h-4 mr-2"></i> Admin</button>` : ''}
-                    
-                    ${(sub === 'none' && !isAdmin) ? `<button onclick="renderSubscriptionModal()" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow hover:bg-yellow-600 flex items-center transition animate-pulse"><i data-lucide="gem" class="w-4 h-4 mr-2"></i> ${translate('upgradeSubscription')}</button>` : ''}
-                    
-                    <!-- Profil Dropdown -->
                     <div class="relative inline-block text-left">
                         <button id="profile-btn" class="bg-brand-green hover:bg-brand-green-dark text-white px-4 py-2 rounded-lg shadow flex items-center">
-                            <i data-lucide="user" class="w-4 h-4 mr-2"></i> Hesabım
+                            <i data-lucide="user" class="w-4 h-4 mr-2"></i> ${currentUser.split('@')[0]}
                         </button>
                         <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-stone-800 rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
                              <button onclick="showCredentials()" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="info" class="w-4 h-4 mr-2"></i> ${translate('viewCredentials')}</button>
                              <button onclick="renderAccountSwitchModal()" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="users" class="w-4 h-4 mr-2"></i> ${translate('accountSwitch')}</button>
-                             <button id="theme-toggle-btn-dash" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">Tema</button>
-                             
-                             <!-- Dil Seçenekleri -->
+                             <button id="theme-toggle-btn-dash" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left"></button>
                              <div class="border-t border-gray-100 dark:border-stone-700 my-1"></div>
                              <button onclick="setLanguage('tr')" class="block px-4 py-2 text-sm ${currentLang==='tr'?'text-green-600 font-bold':'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">🇹🇷 Türkçe</button>
                              <button onclick="setLanguage('en')" class="block px-4 py-2 text-sm ${currentLang==='en'?'text-green-600 font-bold':'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left">🇺🇸 English</button>
-
                              <div class="border-t border-gray-100 dark:border-stone-700 my-1"></div>
                              <button onclick="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-stone-700 w-full text-left flex items-center"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i> ${translate('logout')}</button>
                         </div>
@@ -829,34 +987,43 @@ function renderDashboard(target) {
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-0">
                 <!-- Veri Girişi -->
-                <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+                <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700 h-fit">
                     <h2 class="text-xl font-bold mb-4 dark:text-white">${translate('dailyEntryTitle')}</h2>
                     <form id="add-data-form" class="space-y-3">
-                        <input id="dmCount" type="number" placeholder="${translate('dmCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
-                        <input id="adSpend" type="number" step="0.01" placeholder="${translate('adSpendLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
-                        <input id="salesCount" type="number" placeholder="${translate('salesCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
-                        <input id="revenue" type="number" step="0.01" placeholder="${translate('revenueLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="dmCount" type="number" min="0" placeholder="${translate('dmCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="adSpend" type="number" step="0.01" min="0" placeholder="${translate('adSpendLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="salesCount" type="number" min="0" placeholder="${translate('salesCountLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        <input id="revenue" type="number" step="0.01" min="0" placeholder="${translate('revenueLabel')}" class="w-full p-2 rounded border dark:bg-stone-700 dark:border-stone-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
                         <button type="submit" class="w-full bg-brand-green text-white py-2 rounded hover:bg-green-700 font-bold shadow transition transform hover:scale-[1.02]">${translate('saveMetricsButton')}</button>
+                        ${!isPremium ? `<p class="text-xs text-center text-red-500 mt-2 dark:text-red-400">Ücretsiz Limit: ${FREE_TIER_LIMIT} Kayıt</p>` : ''}
                     </form>
                 </section>
                 <!-- Grafik -->
                 <section class="lg:col-span-2 bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+                    <h2 class="text-xl font-bold mb-4 dark:text-white">${translate('visualizationTitle')}</h2>
                     <div id="chart-area" class="w-full h-64"></div>
                 </section>
             </div>
 
             <!-- Tablo -->
-            <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700">
+            <section class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-6 rounded-2xl shadow-xl border border-white/20 dark:border-stone-700 mb-8">
                 <h2 class="text-xl font-bold mb-4 dark:text-white">${translate('recordsTitle')}</h2>
                 <div id="table-area" class="overflow-x-auto"></div>
             </section>
+            
+            <!-- Footer -->
+            <footer class="mt-auto text-center p-4">
+                <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" class="bg-white/50 dark:bg-stone-800/50 hover:bg-white/80 dark:hover:bg-stone-700 backdrop-blur px-6 py-3 rounded-full shadow-lg text-green-700 dark:text-green-400 font-bold inline-flex items-center transition transform hover:scale-105">
+                    <i data-lucide="message-circle" class="w-5 h-5 mr-2"></i> ${translate('contactFooter')}
+                </a>
+            </footer>
         </div>
     `;
 
     lucide.createIcons();
     checkReminders(); 
+    checkFirstLogin();
     
-    // Profil Dropdown Logic
     const pBtn = document.getElementById('profile-btn');
     const pDrop = document.getElementById('profile-dropdown');
     if(pBtn) {
@@ -865,25 +1032,29 @@ function renderDashboard(target) {
         pDrop.onclick = (e) => e.stopPropagation();
     }
 
-    // Tema butonu dashboard içinde
     const themeBtnDash = document.getElementById('theme-toggle-btn-dash');
     if(themeBtnDash) {
         updateThemeButton(themeBtnDash);
         themeBtnDash.onclick = () => { toggleTheme(); updateThemeButton(themeBtnDash); };
     }
+    
+    window.showAboutModal = () => {
+        showCustomModal(translate('welcomeTitle'), translate('welcomeBody'), false, null, null, { cancelText: translate('close') });
+    };
 
     window.logout = () => { localStorage.removeItem('current_user'); currentUser = null; render(); };
     window.showCredentials = () => {
-         let subText = u.subscription === 'diamond' ? translate('subDiamond') : translate('subFree');
-         if (u.isAdmin) subText = `Admin (${subText})`;
-         showCustomModal(translate('accountInfoTitle'), translate('accountInfoBody', { email: currentUser, password: u.password, subText, subClass: 'text-yellow-600' }), false);
+        let subText = u.subscription === 'diamond' ? translate('subDiamond') : translate('subFree');
+        if (u.isAdmin) subText = `Admin (${subText})`;
+        const subClass = u.isAdmin ? 'text-blue-600' : (u.subscription === 'diamond' ? 'text-yellow-600' : 'text-gray-500');
+        showCustomModal(translate('accountInfoTitle'), translate('accountInfoBody', { email: currentUser, password: u.password, subText, subClass: subClass }), false);
     };
 
-    // Metrik Verileri
-    const key = 'dashboard_data_' + encodeURIComponent(currentUser.toLowerCase());
+    const key = safeKeyFromEmail(currentUser);
     const data = JSON.parse(localStorage.getItem(key) || '[]');
     
-    // Grafik
+    if (chartInstance) chartInstance.destroy();
+
     if(data.length) {
         const ctx = document.createElement('canvas');
         document.getElementById('chart-area').innerHTML = '';
@@ -894,58 +1065,112 @@ function renderDashboard(target) {
         const totalSales = data.reduce((s,i) => s + (Number(i.salesCount)||0), 0);
         const totalRev = data.reduce((s,i) => s + (Number(i.revenue)||0), 0);
         const net = totalRev - totalAd;
+        
+        const profitColor = net >= 0 ? (currentTheme === 'dark' ? '#4ade80' : '#22c55e') : (currentTheme === 'dark' ? '#f87171' : '#ef4444');
 
-        new Chart(ctx, {
+        chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['DM', 'Reklam', 'Satış', 'Gelir', 'Net Kâr'],
+                labels: [translate('colDM'), translate('colAdSpend'), translate('colSales'), translate('colRevenue'), translate('colNetProfit')],
                 datasets: [{
                     label: 'Toplam',
                     data: [totalDm, totalAd, totalSales, totalRev, net],
-                    backgroundColor: ['#0ea5e9', '#ef4444', '#0ea5e9', '#eab308', net>=0?'#22c55e':'#ef4444']
+                    backgroundColor: ['#0ea5e9', '#ef4444', '#0ea5e9', '#eab308', profitColor],
+                    borderRadius: 4,
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: currentTheme === 'dark' ? '#e5e5e5' : '#4b5563' },
+                        grid: { color: currentTheme === 'dark' ? '#444' : '#e5e7eb' }
+                    },
+                    x: {
+                        ticks: { color: currentTheme === 'dark' ? '#e5e5e5' : '#4b5563' },
+                        grid: { color: currentTheme === 'dark' ? '#444' : '#e5e7eb' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Genel Performans Özeti',
+                        color: currentTheme === 'dark' ? '#fff' : '#1f2937'
+                    }
+                }
+            }
         });
     } else {
-        document.getElementById('chart-area').innerHTML = '<p class="text-center text-gray-500 py-10 dark:text-gray-400">Veri Yok</p>';
+        document.getElementById('chart-area').innerHTML = `<p class="text-center text-gray-500 py-10 dark:text-gray-400">${translate('noDataYet')}</p>`;
     }
 
-    // Tablo
-    const tbody = data.map(d => `
-        <tr class="border-b dark:border-stone-600 hover:bg-gray-50 dark:hover:bg-stone-700">
-            <td class="p-3 dark:text-white text-sm">${new Date(d.createdAt_ms).toLocaleDateString()}</td>
-            <td class="p-3 dark:text-white text-sm">${d.dmCount}</td>
-            <td class="p-3 dark:text-white text-sm">${d.adSpend}$</td>
-            <td class="p-3 dark:text-white text-sm">${d.salesCount}</td>
-            <td class="p-3 dark:text-white text-sm">${d.revenue}$</td>
-            <td class="p-3 font-bold text-sm ${(d.revenue-d.adSpend)>=0?'text-green-600':'text-red-600'}">${(d.revenue-d.adSpend).toFixed(2)}$</td>
-            <td class="p-3">
-                ${(sub === 'diamond' || isAdmin) ? `<button onclick="deleteMetric('${d.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
-            </td>
-        </tr>
-    `).reverse().join('');
+    const tbody = data.map(d => {
+        const netProfit = (parseFloat(d.revenue || 0) - parseFloat(d.adSpend || 0)).toFixed(2);
+        const profitClass = netProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+        return `
+            <tr class="border-b dark:border-stone-600 hover:bg-gray-50 dark:hover:bg-stone-700 transition">
+                <td class="p-3 dark:text-white text-sm">${new Date(d.createdAt_ms).toLocaleDateString()}</td>
+                <td class="p-3 dark:text-white text-sm">${d.dmCount}</td>
+                <td class="p-3 dark:text-white text-sm">${d.adSpend}$</td>
+                <td class="p-3 dark:text-white text-sm">${d.salesCount}</td>
+                <td class="p-3 dark:text-white text-sm">${d.revenue}$</td>
+                <td class="p-3 font-bold text-sm ${profitClass}">${netProfit}$</td>
+                <td class="p-3">
+                    ${isPremium ? `<button onclick="deleteMetricRecord('${d.id}')" class="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-100 dark:hover:bg-stone-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                </td>
+            </tr>
+        `;
+    }).reverse().join('');
     
     document.getElementById('table-area').innerHTML = `
         <table class="w-full text-left">
             <thead class="bg-gray-100 dark:bg-stone-700 text-xs uppercase text-gray-500 dark:text-gray-300">
-                <tr><th class="p-3">Tarih</th><th class="p-3">DM</th><th class="p-3">Reklam</th><th class="p-3">Satış</th><th class="p-3">Gelir</th><th class="p-3">Kâr</th><th class="p-3">İşlem</th></tr>
+                <tr>
+                    <th class="p-3">${translate('colTimestamp')}</th>
+                    <th class="p-3">${translate('colDM')}</th>
+                    <th class="p-3">${translate('colAdSpend')}</th>
+                    <th class="p-3">${translate('colSales')}</th>
+                    <th class="p-3">${translate('colRevenue')}</th>
+                    <th class="p-3">${translate('colNetProfit')}</th>
+                    <th class="p-3">${translate('colActions')}</th>
+                </tr>
             </thead>
-            <tbody>${tbody || '<tr><td colspan="7" class="p-4 text-center dark:text-gray-400">Kayıt yok.</td></tr>'}</tbody>
+            <tbody>${tbody || `<tr><td colspan="7" class="p-4 text-center dark:text-gray-400">${translate('noRecordsFound')}</td></tr>`}</tbody>
         </table>
     `;
     lucide.createIcons();
 
-    window.deleteMetric = (id) => {
-        const newData = data.filter(d => d.id !== id);
-        localStorage.setItem(key, JSON.stringify(newData));
-        render();
+    window.deleteMetricRecord = (id) => {
+        showCustomModal(translate('deleteRecordTitle'), translate('deleteRecordBody'), true, 
+            () => {
+                const newData = data.filter(d => d.id !== id);
+                localStorage.setItem(key, JSON.stringify(newData));
+                render();
+            }
+        );
     };
 
     document.getElementById('add-data-form').onsubmit = (e) => {
         e.preventDefault();
+        
+        const dm = document.getElementById('dmCount').value;
+        const ad = document.getElementById('adSpend').value;
+        const sales = document.getElementById('salesCount').value;
+        const rev = document.getElementById('revenue').value;
+
+        // Validation
+        if (!dm && !ad && !sales && !rev) {
+            showCustomModal('Hata', translate('errorMinOneMetric'), false); return;
+        }
+        if (dm < 0 || ad < 0 || sales < 0 || rev < 0) {
+            showCustomModal('Hata', translate('errorNegativeMetrics'), false); return;
+        }
+
         // Ücretsiz Limit Kontrolü
-        if(sub === 'none' && data.length >= FREE_TIER_LIMIT) { 
+        if(!isPremium && data.length >= FREE_TIER_LIMIT) { 
              showCustomModal(translate('errorFreeLimitTitle'), translate('errorFreeLimitBody', {limit: FREE_TIER_LIMIT}), false); 
              setTimeout(renderSubscriptionModal, 1500);
              return; 
@@ -953,93 +1178,161 @@ function renderDashboard(target) {
         
         const newItem = {
             id: generateId(),
-            dmCount: document.getElementById('dmCount').value || 0,
-            adSpend: document.getElementById('adSpend').value || 0,
-            salesCount: document.getElementById('salesCount').value || 0,
-            revenue: document.getElementById('revenue').value || 0,
+            dmCount: parseInt(dm || 0),
+            adSpend: parseFloat(ad || 0).toFixed(2),
+            salesCount: parseInt(sales || 0),
+            revenue: parseFloat(rev || 0).toFixed(2),
             createdAt_ms: Date.now()
         };
         data.push(newItem);
         localStorage.setItem(key, JSON.stringify(data));
-        render();
+        render(); // Yeniden çiz
     };
 }
 
-/* Admin Yönetim Paneli (YENİ: Fiyat ve Yetki Yönetimi) */
+/* Admin Yönetim Paneli */
 function renderManagementPanel(target) {
     const users = loadAllUsers();
+    // Admin harici tüm kullanıcıları al
     const allUsers = Object.keys(users).map(email => ({ email, ...users[email] })).filter(u => u.email !== ADMIN_EMAIL);
     const cfg = loadConfig();
 
     target.innerHTML = `
     <div class="min-h-screen p-8 relative z-10">
-        <div class="flex justify-between items-center mb-6 bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur">
-             <h2 class="text-2xl font-bold dark:text-white">Kullanıcı Yönetimi</h2>
-             <button onclick="currentView='dashboard';render()" class="bg-gray-500 text-white px-4 py-2 rounded shadow">Geri</button>
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-white/80 dark:bg-stone-800/80 p-4 rounded-xl shadow backdrop-blur gap-4">
+             <h2 class="text-3xl font-bold text-yellow-600 flex items-center"><i data-lucide="shield" class="mr-2"></i> ${translate('managementPanel')}</h2>
+             <div class="flex space-x-2">
+                <button onclick="openAddUserModal()" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 flex items-center"><i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Yeni Kullanıcı Ekle</button>
+                <button onclick="currentView='dashboard';render()" class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600">Geri</button>
+             </div>
         </div>
         
         <!-- Fiyat Ayarları -->
-        <div class="bg-white dark:bg-stone-800 p-4 rounded shadow mb-6 border dark:border-stone-700">
+        <div class="bg-white/90 dark:bg-stone-800/90 backdrop-blur p-5 rounded-xl shadow-xl mb-6 border dark:border-stone-700">
             <h3 class="font-bold text-brand-green mb-3 dark:text-white">${translate('adminPriceSettings')}</h3>
-            <div class="grid grid-cols-3 gap-4">
-                <div><label class="text-xs dark:text-gray-400">1 Aylık ($)</label><input id="adm-p1" type="number" value="${cfg.prices.p1}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
-                <div><label class="text-xs dark:text-gray-400">3 Aylık ($)</label><input id="adm-p3" type="number" value="${cfg.prices.p3}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
-                <div><label class="text-xs dark:text-gray-400">1 Yıllık ($)</label><input id="adm-p12" type="number" value="${cfg.prices.p12}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label class="text-xs dark:text-gray-400">1 Aylık ($)</label><input id="adm-p1" type="number" min="0" value="${cfg.prices.p1}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
+                <div><label class="text-xs dark:text-gray-400">3 Aylık ($)</label><input id="adm-p3" type="number" min="0" value="${cfg.prices.p3}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
+                <div><label class="text-xs dark:text-gray-400">1 Yıllık ($)</label><input id="adm-p12" type="number" min="0" value="${cfg.prices.p12}" class="w-full p-2 border rounded dark:bg-stone-700 dark:text-white"></div>
             </div>
-            <button onclick="savePrices()" class="mt-3 bg-yellow-500 text-white px-4 py-2 rounded shadow hover:bg-yellow-600">${translate('adminPriceSave')}</button>
+            <button onclick="savePrices()" class="mt-4 bg-yellow-500 text-white px-4 py-2 rounded shadow hover:bg-yellow-600 transition">${translate('adminPriceSave')}</button>
         </div>
-       
-        <div class="bg-white dark:bg-stone-800 rounded shadow overflow-x-auto border dark:border-stone-700">
+        
+        <!-- Kullanıcı Listesi -->
+        <div class="bg-white/90 dark:bg-stone-800/90 backdrop-blur rounded-xl shadow-xl overflow-x-auto border dark:border-stone-700">
             <table class="w-full text-left">
-                <thead class="bg-gray-100 dark:bg-stone-700 text-gray-600 dark:text-gray-300"><tr><th class="p-3">Email</th><th class="p-3">Durum</th><th class="p-3">Yetki</th><th class="p-3">İşlem</th></tr></thead>
+                <thead class="bg-gray-100 dark:bg-stone-700 text-xs uppercase text-gray-500 dark:text-gray-300">
+                    <tr><th class="p-3">Email</th><th class="p-3">Durum</th><th class="p-3">Yetki / Abonelik</th><th class="p-3">İşlem</th></tr>
+                </thead>
                 <tbody class="divide-y dark:divide-stone-600">
                     ${allUsers.map(u => `
-                        <tr class="dark:hover:bg-stone-700 hover:bg-gray-50">
-                            <td class="p-3 dark:text-white">${u.email}</td>
-                            <td class="p-3">${u.isBanned ? '<span class="text-red-500 font-bold">Yasaklı</span>' : '<span class="text-green-500 font-bold">Aktif</span>'}</td>
-                            <td class="p-3 dark:text-white">
-                                ${u.isAdmin ? '<span class="text-blue-500 font-bold">Yönetici</span>' : (u.subscription === 'diamond' ? '<span class="text-yellow-500 font-bold">Elmas</span>' : 'Kullanıcı')}
+                        <tr class="dark:hover:bg-stone-700 hover:bg-gray-50 transition">
+                            <td class="p-3 dark:text-white text-sm">${u.email}</td>
+                            <td class="p-3 text-sm">${u.isBanned ? '<span class="text-red-500 font-bold">Yasaklı</span>' : '<span class="text-green-500 font-bold">Aktif</span>'}</td>
+                            <td class="p-3 dark:text-white text-sm">
+                                ${u.isAdmin ? `<span class="text-blue-500 font-bold">${translate('userRoleAdmin')}</span>` : (u.subscription === 'diamond' ? `<span class="text-yellow-500 font-bold">${translate('subDiamond')}</span>` : translate('subFree'))}
                             </td>
-                            <td class="p-3 space-x-2">
-                                <button onclick="admAct('${u.email}','ban')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 dark:text-white">Ban</button>
-                                <button onclick="admAct('${u.email}','sub')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 text-yellow-600 font-bold">Elmas</button>
-                                <button onclick="admAct('${u.email}','admin')" class="text-sm px-2 py-1 border rounded hover:bg-gray-100 dark:hover:bg-stone-600 text-blue-600 font-bold">${u.isAdmin ? translate('actionRemoveAdmin') : translate('actionMakeAdmin')}</button>
+                            <td class="p-3 space-x-2 flex flex-wrap gap-2">
+                                <button onclick="admAct('${u.email}','ban')" class="text-xs px-3 py-1 rounded shadow ${u.isBanned ? 'bg-green-500 text-white' : 'bg-red-500 text-white hover:bg-red-600'}">${u.isBanned ? 'Unban' : 'Banla'}</button>
+                                <button onclick="admAct('${u.email}','sub')" class="text-xs px-3 py-1 rounded shadow ${u.subscription === 'diamond' ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white hover:bg-yellow-600'}">${u.subscription === 'diamond' ? 'Sub İptal' : 'Elmas Yap'}</button>
+                                <button onclick="admAct('${u.email}','admin')" class="text-xs px-3 py-1 rounded shadow ${u.isAdmin ? 'bg-blue-700 text-white' : 'bg-blue-500 text-white hover:bg-blue-600'}">${u.isAdmin ? translate('actionRemoveAdmin') : translate('actionMakeAdmin')}</button>
                             </td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
+            ${allUsers.length === 0 ? `<p class="p-4 text-center dark:text-gray-400">Admin harici kullanıcı yok.</p>` : ''}
         </div>
     </div>`;
     
+    window.openAddUserModal = () => {
+        const content = `
+            <div class="space-y-3">
+                <input id="new-u-email" type="email" placeholder="E-posta Adresi" class="w-full p-3 border rounded dark:bg-stone-700 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                <input id="new-u-pass" type="text" placeholder="Şifre" class="w-full p-3 border rounded dark:bg-stone-700 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                <select id="new-u-role" class="w-full p-3 border rounded dark:bg-stone-700 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                    <option value="user">Standart Kullanıcı</option>
+                    <option value="admin">Yönetici (Admin)</option>
+                </select>
+            </div>
+        `;
+        
+        showCustomModal('Yeni Kullanıcı Oluştur', content, true, () => {
+            const email = document.getElementById('new-u-email').value.trim().toLowerCase();
+            const pass = document.getElementById('new-u-pass').value;
+            const role = document.getElementById('new-u-role').value;
+            
+            if(!email || !pass) return showCustomModal('Hata', 'E-posta ve şifre alanları zorunludur!', false);
+            
+            // users objesini yeniden yükle (güncel kalması için)
+            const currentUsers = loadAllUsers();
+            
+            if(currentUsers[email]) return showCustomModal('Hata', 'Bu e-posta adresiyle kayıtlı bir kullanıcı zaten var!', false);
+            
+            currentUsers[email] = {
+                password: pass,
+                isAdmin: role === 'admin',
+                isBanned: false,
+                subscription: role === 'admin' ? 'diamond' : 'none', // Adminlere otomatik elmas ver
+                createdAt_ms: Date.now()
+            };
+            
+            saveAllUsers(currentUsers);
+            render(); // Sayfayı yenile
+            showCustomModal('Başarılı', `Kullanıcı (${email}) başarıyla oluşturuldu!`, false);
+        }, null, { confirmText: 'Oluştur' });
+    };
+
     window.savePrices = () => {
-        cfg.prices.p1 = document.getElementById('adm-p1').value;
-        cfg.prices.p3 = document.getElementById('adm-p3').value;
-        cfg.prices.p12 = document.getElementById('adm-p12').value;
+        const newP1 = parseFloat(document.getElementById('adm-p1').value) || 0;
+        const newP3 = parseFloat(document.getElementById('adm-p3').value) || 0;
+        const newP12 = parseFloat(document.getElementById('adm-p12').value) || 0;
+
+        if (newP1 < 0 || newP3 < 0 || newP12 < 0) { showCustomModal('Hata', 'Fiyatlar negatif olamaz.', false); return; }
+
+        cfg.prices.p1 = newP1; cfg.prices.p3 = newP3; cfg.prices.p12 = newP12;
         saveConfig(cfg);
         showCustomModal('Başarılı', translate('adminPriceSaved'), false);
     };
 
     window.admAct = (email, type) => {
-        if(type === 'ban') users[email].isBanned = !users[email].isBanned;
-        if(type === 'sub') users[email].subscription = users[email].subscription === 'diamond' ? 'none' : 'diamond';
-        if(type === 'admin') {
-             if(!users[email].isAdmin) {
-                 // Admin yapma onayı
-                 if(!confirm(translate('confirmMakeAdmin'))) return;
-                 users[email].isAdmin = true;
-                 users[email].subscription = 'diamond'; // Adminler otomatik elmas olur
-             } else {
-                 if(!confirm(translate('confirmRemoveAdmin'))) return;
-                 users[email].isAdmin = false;
-             }
+        const users = loadAllUsers(); 
+        const u = users[email];
+        if (!u) return;
+        
+        if(type === 'ban') {
+            u.isBanned = !u.isBanned;
+        } else if(type === 'sub') {
+            u.subscription = u.subscription === 'diamond' ? 'none' : 'diamond';
+        } else if(type === 'admin') {
+            if(!u.isAdmin) {
+                showCustomModal('Onay', translate('confirmMakeAdmin'), true, 
+                    () => {
+                        u.isAdmin = true;
+                        u.subscription = 'diamond'; 
+                        saveAllUsers(users);
+                        render();
+                    }
+                );
+                return; 
+            } else {
+                showCustomModal('Onay', translate('confirmRemoveAdmin'), true, 
+                    () => {
+                        u.isAdmin = false;
+                        saveAllUsers(users);
+                        render();
+                    }
+                );
+                return;
+            }
         }
         saveAllUsers(users);
         render();
     };
+    lucide.createIcons();
 }
 
-// Start
+// Uygulamayı başlat
 render();
 
 </script>
